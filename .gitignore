@@ -1,0 +1,5 @@
+# Does not track compiled python files
+*pyc
+
+# Does not track the default folder for the results
+results/*
