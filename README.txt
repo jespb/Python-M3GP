@@ -60,3 +60,6 @@ $ python Main_M3GP.py
 	[-ts tournament_size]
 		- This flag expects an integer with the tournament size;
 		- By default, this value is set to 10.
+		
+Reference:
+    Muñoz, L., Trujillo, L., & Silva, S. (2015). M3GP – multiclass classification with GP. In Genetic Programming - 18th European Conference, EuroGP 2015, Proceedings (Vol. 9025, pp. 78-91). (Lecture Notes in Computer Science (including subseries Lecture Notes in Artificial Intelligence and Lecture Notes in Bioinformatics); Vol. 9025). Springer-Verlag. https://doi.org/10.1007/978-3-319-16501-1_7
