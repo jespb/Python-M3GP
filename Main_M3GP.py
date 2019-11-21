@@ -69,7 +69,7 @@ def callm3gp():
 			writeToFile(str(i)+",")
 		writeToFile("\n")
 		
-		attributes= ["Training-Accuracy","Test-Accuracy","Dimensions","Size","Final_Model"]
+		attributes= ["Training-Accuracy","Test-Accuracy","Size","Dimensions","Final_Model"]
 		for ai in range(len(toWrite[0])-1):
 			for i in range(len(toWrite)):
 				writeToFile("\n"+attributes[ai]+","+str(i)+",")
