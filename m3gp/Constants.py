@@ -13,7 +13,7 @@ MAX_DEPTH = 6
 POPULATION_SIZE = 500
 MAX_GENERATION = 100
 TRAIN_FRACTION = 0.70
-TOURNAMENT_SIZE = 10#POPULATION_SIZE//20
+TOURNAMENT_SIZE = 10
 ELITISM_SIZE = 1
 SHUFFLE = True
 LIMIT_DEPTH=15
@@ -24,7 +24,6 @@ DATASETS_DIR = "datasets/"
 OUTPUT_DIR = "results/"
 
 DATASETS = ["heart.csv"]
-OUTPUT = "Classification"
 
 
 
@@ -34,8 +33,6 @@ if "-odir" in argv:
 	OUTPUT_DIR = argv[argv.index("-odir")+1]
 if "-d" in argv:
 	DATASETS = argv[argv.index("-d")+1].split(";")
-if "-r" in argv:
-	OUTPUT = "Regression"
 if "-runs" in argv:
 	RUNS = int(argv[argv.index("-runs")+1])
 if "-op" in argv:

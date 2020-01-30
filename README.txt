@@ -45,10 +45,6 @@ $ python Main_M3GP.py
 		- This flag expects an integer with the size of the population;
 		- By default, this value is set to 500.
 
-	[-r] 
-		- States the this is a regression problem. 
-		- By default the GSGP tries to classify samples as 0 or 1
-
 	[-runs number_of_runs] 
 		- This flag expects an integer with the number of runs to be made;
 		- By default, this values is set to 30

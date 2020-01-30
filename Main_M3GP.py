@@ -41,7 +41,7 @@ def callm3gp():
 	except:
 		pass
 
-	for dataset in DATASETS:#["trio_brasil.csv","trio_congo.csv","trio_mocambique.csv","trio_combo.csv"]:#["mcd3.csv","mcd10.csv","brasil.csv","movl.csv","heart.csv","vowel.csv","wav.csv","yeast.csv","seg.csv"]:
+	for dataset in DATASETS:
 		openFile(OUTPUT_DIR+"tmp_m3gp_"+timestamp + "_"+dataset)
 		writeToFile(dataset+"\n")
 		toWrite=[]
@@ -90,7 +90,6 @@ def callm3gp():
 				writeToFile("\n"+attributes[ai]+","+str(i)+",")
 				for val in toWrite[i][ai]:
 					writeToFile(str(val)+",")
-				#writeToFile(",".join(toWrite[i][ai]))
 			writeToFile("\n\n")
 		for i in range(len(toWrite)):
 			writeToFile("\n"+attributes[-1]+","+str(i)+",")
