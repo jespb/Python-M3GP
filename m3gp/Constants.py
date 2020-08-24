@@ -13,17 +13,21 @@ MAX_DEPTH = 6
 POPULATION_SIZE = 500
 MAX_GENERATION = 100
 TRAIN_FRACTION = 0.70
-TOURNAMENT_SIZE = 10
+TOURNAMENT_SIZE = 5
 ELITISM_SIZE = 1
 SHUFFLE = True
-LIMIT_DEPTH=15
+LIMIT_DEPTH=17
 RUNS = 30
+VERBOSE = True
+THREADS = 1
 
 
 DATASETS_DIR = "datasets/"
 OUTPUT_DIR = "results/"
 
 DATASETS = ["heart.csv"]
+OUTPUT = "Classification"
+
 
 
 
@@ -33,6 +37,8 @@ if "-odir" in argv:
 	OUTPUT_DIR = argv[argv.index("-odir")+1]
 if "-d" in argv:
 	DATASETS = argv[argv.index("-d")+1].split(";")
+if "-r" in argv:
+	OUTPUT = "Regression"
 if "-runs" in argv:
 	RUNS = int(argv[argv.index("-runs")+1])
 if "-op" in argv:
@@ -44,29 +50,18 @@ if "-ps" in argv:
 if "-mg" in argv:
 	MAX_GENERATION = int(argv[argv.index("-mg")+1])
 if "-tf" in argv:
-	TRAIN_FRACTION = float(argv[argv.index("-train")+1])
+	TRAIN_FRACTION = float(argv[argv.index("-tf")+1])
 if "-ts" in argv:
 	TOURNAMENT_SIZE = int(argv[argv.index("-ts")+1])
 if "-es" in argv:
 	ELITISM_SIZE = int(argv[argv.index("-es")+1])
 if "-dontshuffle" in argv:
 	SHUFFLE = False
+if "-s" in argv:
+	VERBOSE = False
+if "-t" in argv:
+	THREADS = int(argv[argv.index("-t")+1])
 
-
-
-out = None
-
-def openFile(name):
-	global out
-	out = open(name,"w")
-
-def writeToFile(msg):
-	global out
-	out.write(msg)
-
-def closeFile():
-	global out
-	out.close()
 
 
 

@@ -14,17 +14,17 @@ class Node:
 	right = None
 	value = None
 
-	def __init__(self,depth=MAX_DEPTH, left=None,value=None,right=None):
+	def __init__(self,depth=MAX_DEPTH, left=None,value=None,right=None,full=False):
 		if value == None:
-			i = randint(0,len(getTerminals())+len(OPERATORS)) # randint(a,b) = [a,b]
-			if i < len(OPERATORS) and depth > 1:
+			#i = randint(0,len(getTerminals())+len(OPERATORS)-1) # randint(a,b) = [a,b]
+			#if i < len(OPERATORS) and depth > 1:
+			if depth>1 and (random()<0.5 or full ==True ):
+				i = randint(0,len(OPERATORS)-1)
 				self.value = i
 				self.left = Node(depth-1)
 				self.right = Node(depth-1)
 			else:
-				self.value = randint(0,len(getTerminals()))-1
-				if self.value == -1:
-					self.value *= random()
+				self.value = randint(0,len(getTerminals())-1) # Sem literais
 		else:
 			self.left = left
 			self.right=right
@@ -32,9 +32,16 @@ class Node:
 
 	def __str__(self):
 		if self.left == None:
-			return str(-self.value if self.value < 0 else getTerminals()[self.value])
+			if isinstance(self.value,str):
+				return self.value
+			else:
+				return getTerminals()[self.value]
 		else:
-			return "( " + str(self.left) + " " + OPERATORS[self.value] + " " + str(self.right) + " )"
+			try:
+				return "( " + str(self.left) + " " + OPERATORS[self.value] + " " + str(self.right) + " )"
+			except:
+				print(self.value)
+				print(1/0)
 
 	def getSize(self):
 		if self.left == None:
@@ -82,7 +89,10 @@ class Node:
 
 	def calculate(self, sample):
 		if self.left == None:
-			return -self.value if self.value < 0 else sample[self.value]
+			if isinstance(self.value,str):
+				return float(self.value)
+			else:
+				return sample[self.value]
 		else:
 			if self.value == 0: #+
 				return self.left.calculate(sample) + self.right.calculate(sample)
@@ -93,3 +103,86 @@ class Node:
 			if self.value == 3: #/
 				right = self.right.calculate(sample)
 				return self.left.calculate(sample) if right == 0 else self.left.calculate(sample) / self.right.calculate(sample)
+
+	def isLeaf(self):
+		return self.left == None
+
+	def getSemantics(self):
+		ts = getTrainingSet()
+		sem = []
+		for sample in ts:
+			sem.append(self.calculate(sample))
+		return sem
+
+	def redirect(self, other):
+		self.value = other.value
+		self.left = other.left
+		self.right = other.right
+
+	def prun(self):
+		semantics = self.getSemantics()
+		semantics.sort()
+		if semantics[0]== semantics[-1] and len(semantics)>1:
+			self.value = str(semantics[0])
+			self.left = None
+			self.right = None
+		# [+, -, *, /]
+		
+		# +
+		if self.value == 0:
+			# 0 + X == X
+			if not self.isLeaf() and ( self.left.isLeaf() and self.left.value == "0.0" ):
+				self.redirect(self.right)
+
+			# X + 0 == X
+			if not self.isLeaf() and ( self.right.isLeaf() and self.right.value == "0.0" ):
+				self.redirect(self.left)
+
+			# X + X == 2 * X
+			if not self.isLeaf() and ( str(self.right) == str(self.left) ):
+				self.value = 2
+				self.left = Node(value = "2.0")
+
+		# - 
+		if self.value == 1:
+			# X - 0 == X
+			if not self.isLeaf() and ( self.right.isLeaf() and self.right.value == "0.0" ):
+				self.redirect(self.left)
+
+			# X - X == 0
+			if not self.isLeaf() and ( str(self.right) == str(self.left) ):
+				self.redirect( Node(value="0.0") )
+
+		# * 
+		if self.value == 2:
+			# X * 0 == 0,  0 * X == 0
+			if not self.isLeaf() and ( (self.left.isLeaf() and self.left.value=="0.0") or (self.right.isLeaf() and self.right.value=="0.0") ):
+				self.redirect( Node(value="0.0") )
+
+			# 1 * X == X
+			if not self.isLeaf() and ( self.left.isLeaf() and self.left.value == "1.0" ):
+				self.redirect(self.right)
+
+			# X * 1 == X
+			if not self.isLeaf() and ( self.right.isLeaf() and self.right.value == "1.0" ):
+				self.redirect(self.left)
+
+		# //
+		if self.value == 3:
+			# X // 0 == 1
+			if not self.isLeaf() and ( self.right.isLeaf() and self.right.value=="0.0" ):
+				self.redirect( Node(value="1.0") )
+
+			# X // 1 == X
+			if not self.isLeaf() and ( self.right.isLeaf() and self.right.value=="1.0" ):
+				self.redirect(self.left)
+
+			# X // X == 1
+			if not self.isLeaf() and ( str(self.right) == str(self.left) ):
+				self.redirect( Node(value="1.0") )
+
+		if self.left != None:
+			self.left.prun()
+
+		if self.right != None:
+			self.right.prun()	

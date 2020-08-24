@@ -1,4 +1,5 @@
 import numpy as np
+from sklearn.neighbors import DistanceMetric
 
 from copy import deepcopy
 

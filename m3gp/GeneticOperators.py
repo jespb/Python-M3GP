@@ -1,7 +1,7 @@
 from .Constants import *
 from .Individual import Individual
 from .Node import Node
-from random import random, randint
+from random import random, randint,sample
 from copy import copy
 
 # 
@@ -15,6 +15,7 @@ from copy import copy
 def tournament(population):
 	candidates = [randint(0,len(population)-1) for i in range(TOURNAMENT_SIZE)]
 	return population[min(candidates)]
+
 
 def getElite(population):
 	return population[:ELITISM_SIZE]
@@ -38,7 +39,7 @@ def getOffspring(population):
 			desc = M3REM(population)
 	ret = []
 	for ind in desc:
-		if ind.getDepth() <17:
+		if ind.getDepth() < LIMIT_DEPTH:
 			ret.append(ind)
 	return ret
 
@@ -100,5 +101,7 @@ def M3REM(population):
 	if len(d1)>1:
 		r1 = randint(0,len(d1)-1)
 		d1.pop(r1)
-	ret = [Individual(d1)]
+		ret = [Individual(d1)]
+	else:
+		ret = []
 	return ret

@@ -5,7 +5,6 @@ from sys import argv
 from m3gp.Constants import *
 import os
 
-import time
 
 # 
 # By using this file, you are agreeing to this product's EULA
@@ -16,24 +15,103 @@ import time
 #
 
 
-timestamp = time.strftime("%Y%m%d_%H%M")
 
-def readDataset(filename, seed = 0):
-	panda_ds = pandas.read_csv(filename)
-	terminals = list(panda_ds.columns[:-1])
+
+def openDatasets(which,seed):
+	if VERBOSE:
+		print( "> Opening: ", which )
+
+	# Open dataset
+	ds = pandas.read_csv(DATASETS_DIR+which)
+	
+	# Set features as float
+	col = list(ds)
+	for i in range(len(col)-1):
+		ds[col[i]] = ds[col[i]].astype(float)
+
+	# Shuffle dataset
+	if SHUFFLE:
+		ds = ds.sample(frac=1,random_state=seed) 
+
+	# Read header
+	class_header = ds.columns[-1]
+	terminals = list(ds.columns[:-1])
 	setTerminals(terminals)
 
-	if SHUFFLE:
-		panda_ds = panda_ds.sample(frac=1, random_state = seed)
-	train_ds_size = int(panda_ds.shape[0]*TRAIN_FRACTION)
-	train_ds = []
-	for i in range(train_ds_size):
-		train_ds.append(list(panda_ds.iloc[i]))
-	test_ds = []
-	for i in range(train_ds_size, panda_ds.shape[0]):
-		test_ds.append(list(panda_ds.iloc[i]))
-	setTrainingSet(train_ds)
-	setTestSet(test_ds)
+	# Obtain list of classes
+	classes = list( set( ds[ class_header ] ) )
+
+	# Split the dataset maintaining the class balance
+	ret = [ [] for i in range(2)]
+	for c in classes:
+		classe = ds.loc[ds[class_header] == c]
+		for i in range(classe.shape[0]):
+			if  i < TRAIN_FRACTION * len(classe):
+				ret[0].append(list(classe.iloc[i]))
+			else:
+				ret[1].append(list(classe.iloc[i]))
+	
+
+	setTrainingSet(ret[0])
+	setTestSet(ret[1])
+
+	if VERBOSE:
+		print("   > Attributes: ", terminals)
+		print("   > Classes: ", classes)
+		print("   > Training set size: ", len(ret[0]))
+		print("   > Test set size: ", len(ret[1]))
+		print()
+
+
+	return ret
+
+
+
+def run(r,dataset):
+	if VERBOSE:
+		print("> Starting run:")
+		print("  > ID:", r)
+		print("  > Dataset:", dataset)
+		print()
+
+	datasets = openDatasets(dataset,r)
+
+	# Train a model
+	m3gp = M3GP()
+
+	# Obtain training results
+	accuracy  = m3gp.getAccuracyOverTime()
+	waf       = m3gp.getWaFOverTime()
+	kappa     = m3gp.getKappaOverTime()
+	sizes     = m3gp.getSizesOverTime()
+	model_str = str(m3gp.getBestIndividual())
+	times     = m3gp.getGenerationTimes()
+	
+	tr_acc     = accuracy[0]
+	te_acc     = accuracy[1]
+	tr_waf     = waf[0]
+	te_waf     = waf[1]
+	tr_kappa   = kappa[0]
+	te_kappa   = kappa[1]
+	size       = sizes[0]
+	dimensions = sizes[1]
+
+	if VERBOSE:
+		print("> Ending run:")
+		print("  > ID:", r)
+		print("  > Dataset:", dataset)
+		print("  > Final model:", model_str)
+		print("  > Training accuracy:", tr_acc[-1])
+		print("  > Test accuracy:", te_acc[-1])
+		print()
+
+	return (tr_acc,te_acc,
+			tr_waf,te_waf,
+			tr_kappa,te_kappa,
+			size,dimensions,
+			times,
+			model_str)
+			
 
 def callm3gp():
 	try:
@@ -42,62 +120,47 @@ def callm3gp():
 		pass
 
 	for dataset in DATASETS:
-		openFile(OUTPUT_DIR+"tmp_m3gp_"+timestamp + "_"+dataset)
-		writeToFile(dataset+"\n")
-		toWrite=[]
-		for i in range(RUNS):
-			print(i,"# run with the", dataset,"dataset")
-			readDataset(DATASETS_DIR+dataset, seed = i)
-			m3gp = M3GP()
+		results = []
 
-			writeToFile(",")
-			for i in range(MAX_GENERATION):
-				writeToFile(str(i)+",")
-			
-			accuracy = m3gp.getAccuracyOverTime()
-			sizes = m3gp.getSizesOverTime()
-			toWrite.append([accuracy[0],accuracy[1],sizes[0],sizes[1],str(m3gp.getBestIndividual())])
-			
-			writeToFile("\nTraining-Accuracy,")
-			for val in accuracy[0]:
-				writeToFile(str(val)+",")
-			
-			writeToFile("\nTest-Accuracy,")
-			for val in accuracy[1]:
-				writeToFile(str(val)+",")
-			
-			writeToFile("\nDimensions,")
-			for val in sizes[0]:
-				writeToFile(str(val)+",")
-			
-			writeToFile("\nSize,")
-			for val in sizes[1]:
-				writeToFile(str(val)+",")
+		# Run the algorithm several times
+		for r in range(RUNS):
+			results.append(run(r,dataset))
 
-			writeToFile("\n"+str(m3gp.getBestIndividual())+"\n")
-		
-		closeFile()
-
-		openFile(OUTPUT_DIR+"m3gp_"+timestamp + "_"+dataset) 
-		writeToFile("Attribute,Run,")
+		# Write output header
+		file = open(OUTPUT_DIR+"m3gp_"+ dataset , "w")
+		file.write("Attribute,Run,")
 		for i in range(MAX_GENERATION):
-			writeToFile(str(i)+",")
-		writeToFile("\n")
+			file.write(str(i)+",")
+		file.write("\n")
 		
-		attributes= ["Training-Accuracy","Test-Accuracy","Size","Dimensions","Final_Model"]
-		for ai in range(len(toWrite[0])-1):
-			for i in range(len(toWrite)):
-				writeToFile("\n"+attributes[ai]+","+str(i)+",")
-				for val in toWrite[i][ai]:
-					writeToFile(str(val)+",")
-			writeToFile("\n\n")
-		for i in range(len(toWrite)):
-			writeToFile("\n"+attributes[-1]+","+str(i)+",")
-			writeToFile(str(toWrite[i][-1]))
-		writeToFile("\n\n")
+		attributes= ["Training-Accuracy","Test-Accuracy",
+					 "Training-WaF", "Test-WaF",
+					 "Training-Kappa", "Test-Kappa",
+					 "Size","Dimensions",
+					 "Time",
+					 "Final_Model"]
 
-		
-		closeFile()
-		os.remove(OUTPUT_DIR+"tmp_m3gp_"+timestamp + "_"+dataset)
+		# Write attributes with value over time
+		for ai in range(len(attributes)-1):
+			for i in range(RUNS):
+				file.write("\n"+attributes[ai]+","+str(i)+",")
+				file.write( ",".join([str(val) for val in results[i][ai]]))
+			file.write("\n")
 
-callm3gp()
+		# Write the final models
+		for i in range(len(results)):
+			file.write("\n"+attributes[-1]+","+str(i)+",")
+			file.write(results[i][-1])
+		file.write("\n")
+
+		# Write some parameters
+		file.write("\n\nParameters")
+		file.write("\nPOPULATION_SIZE,"+str(POPULATION_SIZE))
+		file.write("\nMAX_GENERATION,"+str(MAX_GENERATION))
+		file.write("\nTOURNAMENT_SIZE,"+str(TOURNAMENT_SIZE))
+		file.write("\nTHREADS,"+str(THREADS))
+
+		file.close()
+
+if __name__ == '__main__':
+	callm3gp()
