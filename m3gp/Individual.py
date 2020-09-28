@@ -217,14 +217,12 @@ class Individual:
 		Returns the class prediction of a sample.
 		'''
 		pred = self.calculate(sample)
-		
-		dist = DistanceMetric.get_metric("mahalanobis", VI = self.invCovarianceMatrix[0])
 
-		pick_d = distance(pred, self.classCentroids[0],self.invCovarianceMatrix[0])
+		pick_d = mahalanobisDistance(pred, self.classCentroids[0],self.invCovarianceMatrix[0])
 		pick = self.classes[0]
 		
 		for i in range(len(self.classes)):
-			d = distance(pred, self.classCentroids[i],self.invCovarianceMatrix[i])
+			d = mahalanobisDistance(pred, self.classCentroids[i],self.invCovarianceMatrix[i])
 			if d < pick_d:
 				pick_d = d
 				pick = self.classes[i]
