@@ -48,6 +48,9 @@ class Population:
 
 
 	def stoppingCriteria(self):
+		'''
+		Returns True if the stopping criteria was reached.
+		'''
 		genLimit = self.currentGeneration >= MAX_GENERATION
 		perfectTraining = self.bestIndividual.getFitness() == 1
 		
@@ -55,6 +58,9 @@ class Population:
 
 
 	def train(self):
+		'''
+		Training loop for the algorithm.
+		'''
 		if VERBOSE:
 			print("> Running log:")
 
@@ -85,6 +91,10 @@ class Population:
 
 
 	def nextGeneration(self):
+		'''
+		Generation algorithm: the population is sorted; the best individual is pruned;
+		the elite is selected; and the offspring are created.
+		'''
 		begin = datetime.datetime.now()
 		
 		begin = str(begin.hour)+"h"+str(begin.minute)+"m"+str(begin.second)

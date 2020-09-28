@@ -69,27 +69,43 @@ class Individual:
 
 
 	def getSize(self):
+		'''
+		Returns the total number of nodes within an individual.
+		'''
 		if self.size == None:
 			self.size = sum(n.getSize() for n in self.dimensions)
 		return self.size
 
 	def getDepth(self):
+		'''
+		Returns the depth of individual.
+		'''
 		if self.depth == None:
 			self.depth = max([dimension.getDepth() for dimension in self.dimensions])
 		return self.depth 
 
 	def getDimensions(self):
+		'''
+		Returns a deep clone of the individual's list of dimensions.
+		'''
 		ret = []
 		for dim in self.dimensions:
 			ret.append(dim.clone())
 		return ret
 
+
 	def getNumberOfDimensions(self):
+		'''
+		Returns the total number of dimensions within the individual.
+		'''
 		return len(self.dimensions)
 
 
 
 	def getFitness(self):
+		'''
+		Returns the individual's fitness.
+		'''
 		if self.fitness == None:
 			if self.fitnessType == "Accuracy":
 				acc = self.getTrainingAccuracy()
@@ -102,6 +118,9 @@ class Individual:
 		return self.fitness
 
 	def getTrainingPredictions(self,ds=None):
+		'''
+		Returns the individual's training predictions.
+		'''
 		if self.trainingPredictions == None:
 			if ds == None:
 				ds = getTrainingSet()
@@ -113,6 +132,10 @@ class Individual:
 		return self.trainingPredictions
 
 	def getTestPredictions(self):
+
+		'''
+		Returns the individual's test predictions.
+		'''
 		if self.testPredictions == None:
 			self.makecluster()
 			ds = getTestSet()
@@ -122,6 +145,9 @@ class Individual:
 
 
 	def getTrainingAccuracy(self):
+		'''
+		Returns the individual's training accuracy.
+		'''
 		self.getTrainingPredictions()
 
 		ds = getTrainingSet()
@@ -129,6 +155,9 @@ class Individual:
 		return accuracy_score(self.trainingPredictions, y)
 	
 	def getTestAccuracy(self):
+		'''
+		Returns the individual's test accuracy.
+		'''
 		self.getTestPredictions()
 
 		ds = getTestSet()
@@ -136,6 +165,9 @@ class Individual:
 		return accuracy_score(self.testPredictions, y)
 
 	def getTrainingWaF(self):
+		'''
+		Returns the individual's training WAF.
+		'''
 		self.getTrainingPredictions()
 
 		ds = getTrainingSet()
@@ -143,6 +175,9 @@ class Individual:
 		return f1_score(self.trainingPredictions, y, average = "weighted")
 
 	def getTestWaF(self):
+		'''
+		Returns the individual's test WAF.
+		'''
 		self.getTestPredictions()
 
 		ds = getTestSet()
@@ -150,6 +185,9 @@ class Individual:
 		return f1_score(self.testPredictions, y, average="weighted")
 
 	def getTrainingKappa(self):
+		'''
+		Returns the individual's training kappa value.
+		'''
 		self.getTrainingPredictions()
 
 		ds = getTrainingSet()
@@ -157,6 +195,9 @@ class Individual:
 		return cohen_kappa_score(self.trainingPredictions, y)
 
 	def getTestKappa(self):
+		'''
+		Returns the individual's test kappa value.
+		'''
 		self.getTestPredictions()
 
 		ds = getTestSet()
@@ -166,9 +207,15 @@ class Individual:
 
 
 	def calculate(self, sample):
+		'''
+		Return the position of a sample in the output space.
+		'''
 		return [self.dimensions[i].calculate(sample) for i in range(len(self.dimensions))]
 
 	def predict(self, sample):
+		'''
+		Returns the class prediction of a sample.
+		'''
 		pred = self.calculate(sample)
 		
 		dist = DistanceMetric.get_metric("mahalanobis", VI = self.invCovarianceMatrix[0])
@@ -185,11 +232,17 @@ class Individual:
 		return pick
 
 	def predict_all(self, dataset):
+		'''
+		Returns the class predictions of the samples in a dataset.
+		'''
 		return [ self.predict(s) for s in dataset]
 
 
 
 	def makecluster(self, ds = None):
+		'''
+		Calculates the class clusters in the output space.
+		'''
 		if self.invCovarianceMatrix != None:
 			return
 
@@ -221,6 +274,10 @@ class Individual:
 
 
 	def prun(self,simp=True):
+		'''
+		Remove the dimensions that degrade the fitness.
+		If simp==True, also simplifies each dimension.
+		'''
 		dup = self.dimensions[:]
 		i = 0
 		ind = Individual(dup)

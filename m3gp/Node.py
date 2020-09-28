@@ -43,19 +43,29 @@ class Node:
 				print(self.value)
 				print(1/0)
 
+
 	def getSize(self):
+		'''
+		Returns the total number of nodes within this Node.
+		'''
 		if self.left == None:
 			return 1
 		else:
 			return self.left.getSize() + 1 + self.right.getSize()
 
 	def getDepth(self):
+		'''
+		Returns the depth of this Node.
+		'''
 		if self.left == None:
 			return 1
 		else:
 			return 1 + max(self.left.getDepth(),self.right.getDepth())
 
 	def getRandomNode(self, value=None):
+		'''
+		Returns a random Node within this Node.
+		'''
 		if value == None:
 			value = randint(0,self.getSize()-1)
 		if value == 0:
@@ -70,6 +80,9 @@ class Node:
 
 
 	def swap(self, other):
+		'''
+		Swaps the content of two nodes.
+		'''
 		l = self.left
 		v = self.value
 		r = self.right
@@ -81,6 +94,9 @@ class Node:
 		other.right = r
 
 	def clone(self):
+		'''
+		Returns a clone of this node.
+		'''
 		if self.left == None:
 			return Node(left = None, value=self.value, right = None)
 		else:
@@ -88,6 +104,9 @@ class Node:
 
 
 	def calculate(self, sample):
+		'''
+		Returns the calculated value of a sample.
+		'''
 		if self.left == None:
 			if isinstance(self.value,str):
 				return float(self.value)
@@ -105,9 +124,15 @@ class Node:
 				return self.left.calculate(sample) if right == 0 else self.left.calculate(sample) / self.right.calculate(sample)
 
 	def isLeaf(self):
+		'''
+		Returns True if the Node had no sub-nodes.
+		'''
 		return self.left == None
 
 	def getSemantics(self):
+		'''
+		Returns the semantic of a Node.
+		'''
 		ts = getTrainingSet()
 		sem = []
 		for sample in ts:
@@ -115,11 +140,17 @@ class Node:
 		return sem
 
 	def redirect(self, other):
+		'''
+		Assigns the content of another Node to this Node.
+		'''
 		self.value = other.value
 		self.left = other.left
 		self.right = other.right
 
 	def prun(self):
+		'''
+		Simplifies this Node
+		'''
 		semantics = self.getSemantics()
 		semantics.sort()
 		if semantics[0]== semantics[-1] and len(semantics)>1:

@@ -12,6 +12,9 @@ from copy import deepcopy
 #
 
 def getInverseCovarianceMatrix(cluster):
+	'''
+	Returns the inverse covariance matrix, obtained from a cluster
+	'''
 	ret = []
 	for i in range(len(cluster[0])):
 		ret.append([0]*len(cluster[0]))
@@ -22,6 +25,9 @@ def getInverseCovarianceMatrix(cluster):
 	return np.array(inverseMatrix(ret))
 
 def distance(v1,v2,invCovarianceMatrix):
+	'''
+	Returns the distance between two points
+	'''
 	dist = 2
 	if dist == 1:
 		return euclideanDistance(v1,v2)
@@ -29,9 +35,15 @@ def distance(v1,v2,invCovarianceMatrix):
 		return mahalanobisDistance(v1,v2,invCovarianceMatrix)
 
 def euclideanDistance(v1,v2):
+	'''
+	Returns the euclidean distance between two points
+	'''
 	return sum([(v1[i]-v2[i])**2 for i in range(len(v1))])**0.5
 
 def mahalanobisDistance(v1,v2,invCovarianceMatrix):
+	'''
+	Returns the mahalanobis distance between two points
+	'''
 	x = np.array(v1)
 	y = np.array(v2)
 
@@ -47,6 +59,10 @@ def mahalanobisDistance(v1,v2,invCovarianceMatrix):
 
 
 def inverseMatrix(m):
+	'''
+	Returns the inverse of the matrix m, if possible,
+	otherwise returns the diagonal matrix
+	'''
 	m = deepcopy(m)
 	n = len(m)
 	inv = np.eye(n)
