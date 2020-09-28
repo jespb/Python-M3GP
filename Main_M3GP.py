@@ -5,6 +5,8 @@ from sys import argv
 from m3gp.Constants import *
 import os
 
+import numpy as np
+
 
 # 
 # By using this file, you are agreeing to this product's EULA
@@ -17,17 +19,18 @@ import os
 
 
 
-def openDatasets(which,seed):
+def openAndSplitDatasets(which,seed):
 	if VERBOSE:
 		print( "> Opening: ", which )
 
 	# Open dataset
 	ds = pandas.read_csv(DATASETS_DIR+which)
-	
+
 	# Set features as float
 	col = list(ds)
 	for i in range(len(col)-1):
 		ds[col[i]] = ds[col[i]].astype(float)
+
 
 	# Shuffle dataset
 	if SHUFFLE:
@@ -36,7 +39,6 @@ def openDatasets(which,seed):
 	# Read header
 	class_header = ds.columns[-1]
 	terminals = list(ds.columns[:-1])
-	setTerminals(terminals)
 
 	# Obtain list of classes
 	classes = list( set( ds[ class_header ] ) )
@@ -50,10 +52,17 @@ def openDatasets(which,seed):
 				ret[0].append(list(classe.iloc[i]))
 			else:
 				ret[1].append(list(classe.iloc[i]))
-	
 
-	setTrainingSet(ret[0])
-	setTestSet(ret[1])
+	# Convert dataset to Pandas
+	ret[0] = pandas.DataFrame( np.array(ret[0]))
+	ret[1] = pandas.DataFrame( np.array(ret[1]))
+	ret[0].columns = terminals+[class_header]
+	ret[1].columns = terminals+[class_header]
+
+	# Split Features from Class
+	ret[0] = ( ret[0].drop(class_header, axis = 1), ret[0][class_header] )
+	ret[1] = ( ret[1].drop(class_header, axis = 1), ret[1][class_header] ) 
+
 
 	if VERBOSE:
 		print("   > Attributes: ", terminals)
@@ -63,8 +72,7 @@ def openDatasets(which,seed):
 		print()
 
 
-	return ret
-
+	return (ret[0][0], ret[0][1], ret[1][0], ret[1][1])
 
 
 def run(r,dataset):
@@ -74,10 +82,10 @@ def run(r,dataset):
 		print("  > Dataset:", dataset)
 		print()
 
-	datasets = openDatasets(dataset,r)
+	Tr_X, Tr_Y, Te_X, Te_Y = openAndSplitDatasets(dataset,r)
 
 	# Train a model
-	m3gp = M3GP()
+	m3gp = M3GP(Tr_X, Tr_Y, Te_X, Te_Y)
 
 	# Obtain training results
 	accuracy  = m3gp.getAccuracyOverTime()

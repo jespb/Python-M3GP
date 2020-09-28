@@ -12,7 +12,15 @@ from .Population import Population
 class M3GP:
 	population = None
 
-	def __init__(self):
+	def __init__(self, Tr_X, Tr_Y, Te_X=None, Te_Y=None):
+		setTerminals(Tr_X.columns)
+		Tr_X["Class"] = Tr_Y
+		Tr_X = [ list(sample) for sample in Tr_X.iloc]
+		Te_X["Class"] = Te_Y
+		Te_X = [ list(sample) for sample in Te_X.iloc]
+		setTrainingSet(Tr_X)
+		setTestSet(Te_X)
+
 
 		self.population = Population()
 		self.population.train()
