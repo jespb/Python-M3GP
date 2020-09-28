@@ -24,12 +24,6 @@ class M3GP:
 		'''
 		return self.population.getBestIndividual().predict(sample)
 
-	def getGen(self):
-		'''
-		Returns the current generation of the M3GP population.
-		'''
-		return self.population.getCurrentGeneration()
-
 	def getBestIndividual(self):
 		'''
 		Returns the final M3GP model.

@@ -34,11 +34,6 @@ def distance(v1,v2,invCovarianceMatrix):
 	else:
 		return mahalanobisDistance(v1,v2,invCovarianceMatrix)
 
-def euclideanDistance(v1,v2):
-	'''
-	Returns the euclidean distance between two points
-	'''
-	return sum([(v1[i]-v2[i])**2 for i in range(len(v1))])**0.5
 
 def mahalanobisDistance(v1,v2,invCovarianceMatrix):
 	'''
