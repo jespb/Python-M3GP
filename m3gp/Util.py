@@ -1,7 +1,6 @@
 import numpy as np
 from sklearn.neighbors import DistanceMetric
 
-from copy import deepcopy
 
 # 
 # By using this file, you are agreeing to this product's EULA

@@ -1,15 +1,10 @@
 from .Node import Node
 from .Constants import *
 from .Util import *
-import pandas as pd
-import numpy as np
-
 
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import f1_score
 from sklearn.metrics import cohen_kappa_score
-
-from sklearn.neighbors import DistanceMetric
 
 
 
@@ -261,7 +256,7 @@ class Individual:
 
 		self.invCovarianceMatrix = []
 		for cluster in clusters:
-			m = np.array(getInverseCovarianceMatrix(cluster))
+			m = getInverseCovarianceMatrix(cluster)
 			self.invCovarianceMatrix.append(m)
 
 		self.classCentroids = []

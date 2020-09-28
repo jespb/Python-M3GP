@@ -1,8 +1,7 @@
 from .Constants import *
 from .Individual import Individual
 from .Node import Node
-from random import random, randint,sample
-from copy import copy
+from random import random, randint
 
 # 
 # By using this file, you are agreeing to this product's EULA
