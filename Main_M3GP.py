@@ -67,8 +67,8 @@ def openAndSplitDatasets(which,seed):
 	if VERBOSE:
 		print("   > Attributes: ", terminals)
 		print("   > Classes: ", classes)
-		print("   > Training set size: ", len(ret[0]))
-		print("   > Test set size: ", len(ret[1]))
+		print("   > Training set size: ", len(ret[0][0]))
+		print("   > Test set size: ", len(ret[1][0]))
 		print()
 
 

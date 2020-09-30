@@ -24,12 +24,31 @@ def getInverseCovarianceMatrix(cluster):
 	return np.array(inverseMatrix(ret))
 
 
+def mahalanobisDistance_fromDistanceMetric(v1,v2,invCovarianceMatrix):
+	'''
+	Returns the mahalanobis distance between two points
+	'''
+	return DistanceMetric.get_metric('mahalanobis', VI = invCovarianceMatrix)
+	
 def mahalanobisDistance(v1,v2,invCovarianceMatrix):
 	'''
 	Returns the mahalanobis distance between two points
 	'''
-	dist = DistanceMetric.get_metric('mahalanobis', VI = invCovarianceMatrix)
-	return dist.pairwise([v1,v2])[0][-1]
+	x = np.array(v1)
+	y = np.array(v2)
+
+	sub = np.subtract(x,y)
+	mult = np.matmul(sub,invCovarianceMatrix)
+	if (len(invCovarianceMatrix)==1):
+		mult = [mult]
+	mult2 = np.matmul(mult,sub.transpose())
+	if(mult2 < 0):
+		return euclideanDistance(v1,v2)
+
+	return mult2**0.5
+
+def euclideanDistance(v1,v2):
+	return sum([(v1[i]-v2[i])**2 for i in range(len(v1))])**0.5
 
 
 def inverseMatrix(m):
