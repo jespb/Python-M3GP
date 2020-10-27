@@ -1,6 +1,7 @@
 from .Node import Node
 from .Constants import *
 from .Util import *
+from .MahalanobisDistanceClassifier import MahalanobisDistanceClassifier
 
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import f1_score
@@ -25,14 +26,11 @@ class Individual:
 
 	dimensions = None
 
-	invCovarianceMatrix = None
-	classCentroids = None
-	classes = None
 
 	fitness = None
 
+	model_name = ["MahalanobisDistanceClassifier"][0]
 	model = None
-
 
 	fitnessType = ["Accuracy", "WAF"][0]
 
@@ -60,6 +58,21 @@ class Individual:
 
 	def __str__(self):
 		return ",".join([str(d) for d in self.dimensions])
+
+
+	def trainModel(self):
+		'''
+		Trains the classifier which will be used in the fitness function
+		'''
+		if self.model == None:
+			if self.model_name == "MahalanobisDistanceClassifier":
+				self.model = MahalanobisDistanceClassifier()
+				ds = getTrainingSet()
+				X = [s[:-1] for s in ds]
+				hyper_X = self.convert(X)
+				Y = [s[-1] for s in ds]
+				self.model.fit(hyper_X,Y)
+
 
 
 
@@ -112,17 +125,16 @@ class Individual:
 
 		return self.fitness
 
-	def getTrainingPredictions(self,ds=None):
+
+
+	def getTrainingPredictions(self):
 		'''
 		Returns the individual's training predictions.
 		'''
+		self.trainModel()
 		if self.trainingPredictions == None:
-			if ds == None:
-				ds = getTrainingSet()
-
-			self.makecluster(ds)
-			
-			self.trainingPredictions = self.predict_all(ds)
+			X = [sample[:-1] for sample in getTrainingSet() ]
+			self.trainingPredictions = self.predict(X)
 	
 		return self.trainingPredictions
 
@@ -131,10 +143,10 @@ class Individual:
 		'''
 		Returns the individual's test predictions.
 		'''
+		self.trainModel()
 		if self.testPredictions == None:
-			self.makecluster()
-			ds = getTestSet()
-			self.testPredictions = self.predict_all(ds)
+			X = [sample[:-1] for sample in getTestSet() ]
+			self.testPredictions = self.predict(X)
 
 		return self.testPredictions
 
@@ -207,63 +219,22 @@ class Individual:
 		'''
 		return [self.dimensions[i].calculate(sample) for i in range(len(self.dimensions))]
 
-	def predict(self, sample):
+	def convert(self, X):
+		'''
+		Returns the converted input space.
+		'''
+		return [self.calculate(sample) for sample in X]
+
+
+	def predict(self, X):
 		'''
 		Returns the class prediction of a sample.
 		'''
-		pred = self.calculate(sample)
+		hyper_X = self.convert(X)
+		predictions = self.model.predict(hyper_X)
 
-		pick_d = mahalanobisDistance(pred, self.classCentroids[0],self.invCovarianceMatrix[0])
-		pick = self.classes[0]
-		
-		for i in range(len(self.classes)):
-			d = mahalanobisDistance(pred, self.classCentroids[i],self.invCovarianceMatrix[i])
-			if d < pick_d:
-				pick_d = d
-				pick = self.classes[i]
-		
-		return pick
+		return predictions
 
-	def predict_all(self, dataset):
-		'''
-		Returns the class predictions of the samples in a dataset.
-		'''
-		return [ self.predict(s) for s in dataset]
-
-
-
-	def makecluster(self, ds = None):
-		'''
-		Calculates the class clusters in the output space.
-		'''
-		if self.invCovarianceMatrix != None:
-			return
-
-		if ds == None:
-			ds = getTrainingSet()
-
-		self.classes = []
-		clusters = []
-		for sample in ds:
-			if not str(sample[-1]) in self.classes:
-				self.classes.append(str(sample[-1]))
-				clusters.append([])
-
-		for sample in ds:
-			index = self.classes.index(str(sample[-1]))
-			coor = self.calculate(sample)
-			clusters[index].append(coor)
-
-		self.invCovarianceMatrix = []
-		for cluster in clusters:
-			m = getInverseCovarianceMatrix(cluster)
-			self.invCovarianceMatrix.append(m)
-
-		self.classCentroids = []
-		for cluster in clusters:
-			self.classCentroids.append([0 for i in range(len(cluster[0]))])
-			for sample in cluster:
-				self.classCentroids[-1] = [self.classCentroids[-1][i] + sample[i]/len(cluster) for i in range(len(self.classCentroids[-1]))]
 
 
 	def prun(self,simp=True):
@@ -291,10 +262,7 @@ class Individual:
 		self.testAccuracy = None
 		self.size = None
 		self.depth = None
-		self.invCovarianceMatrix = None
-		self.classCentroids = None
-		self.classes = None
-		self.makecluster()
+		self.model = None
 
 		if simp:
 			# Simplify dimensions
