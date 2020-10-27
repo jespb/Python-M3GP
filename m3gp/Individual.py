@@ -2,6 +2,7 @@ from .Node import Node
 from .Constants import *
 from .Util import *
 from .MahalanobisDistanceClassifier import MahalanobisDistanceClassifier
+from .EuclideanDistanceClassifier import EuclideanDistanceClassifier
 
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import f1_score
@@ -29,7 +30,7 @@ class Individual:
 
 	fitness = None
 
-	model_name = ["MahalanobisDistanceClassifier"][0]
+	model_name = ["MahalanobisDistanceClassifier", "EuclideanDistanceClassifier"][0]
 	model = None
 
 	fitnessType = ["Accuracy", "WAF"][0]
@@ -67,11 +68,15 @@ class Individual:
 		if self.model == None:
 			if self.model_name == "MahalanobisDistanceClassifier":
 				self.model = MahalanobisDistanceClassifier()
-				ds = getTrainingSet()
-				X = [s[:-1] for s in ds]
-				hyper_X = self.convert(X)
-				Y = [s[-1] for s in ds]
-				self.model.fit(hyper_X,Y)
+			if self.model_name == "EuclideanDistanceClassifier":
+				self.model = EuclideanDistanceClassifier()
+			
+
+			ds = getTrainingSet()
+			X = [s[:-1] for s in ds]
+			hyper_X = self.convert(X)
+			Y = [s[-1] for s in ds]
+			self.model.fit(hyper_X,Y)
 
 
 
