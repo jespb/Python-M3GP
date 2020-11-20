@@ -129,50 +129,50 @@ def callm3gp():
 
 	for dataset in DATASETS:
 		if not os.path.exists(OUTPUT_DIR+"m3gp_"+ dataset):
-			try:
-				results = []
+			results = []
 
-				# Run the algorithm several times
-				for r in range(RUNS):
-					results.append(run(r,dataset))
+			# Run the algorithm several times
+			for r in range(RUNS):
+				results.append(run(r,dataset))
 
-				# Write output header
-				file = open(OUTPUT_DIR+"m3gp_"+ dataset , "w")
-				file.write("Attribute,Run,")
-				for i in range(MAX_GENERATION):
-					file.write(str(i)+",")
-				file.write("\n")
+			# Write output header
+			file = open(OUTPUT_DIR+"m3gp_"+ dataset , "w")
+			file.write("Attribute,Run,")
+			for i in range(MAX_GENERATION):
+				file.write(str(i)+",")
+			file.write("\n")
 		
-				attributes= ["Training-Accuracy","Test-Accuracy",
-							 "Training-WaF", "Test-WaF",
-							 "Training-Kappa", "Test-Kappa",
-							 "Size","Dimensions",
-							 "Time",	
-							 "Final_Model"]
+			attributes= ["Training-Accuracy","Test-Accuracy",
+						 "Training-WaF", "Test-WaF",
+						 "Training-Kappa", "Test-Kappa",
+						 "Size","Dimensions",
+						 "Time",	
+						 "Final_Model"]
 
-				# Write attributes with value over time
-				for ai in range(len(attributes)-1):
-					for i in range(RUNS):	
-						file.write("\n"+attributes[ai]+","+str(i)+",")
-						file.write( ",".join([str(val) for val in results[i][ai]]))
-					file.write("\n")
-
-				# Write the final models
-				for i in range(len(results)):
-					file.write("\n"+attributes[-1]+","+str(i)+",")
-					file.write(results[i][-1])
+			# Write attributes with value over time
+			for ai in range(len(attributes)-1):
+				for i in range(RUNS):	
+					file.write("\n"+attributes[ai]+","+str(i)+",")
+					file.write( ",".join([str(val) for val in results[i][ai]]))
 				file.write("\n")
 
-				# Write some parameters
-				file.write("\n\nParameters")
-				file.write("\nPOPULATION_SIZE,"+str(POPULATION_SIZE))
-				file.write("\nMAX_GENERATION,"+str(MAX_GENERATION))
-				file.write("\nTOURNAMENT_SIZE,"+str(TOURNAMENT_SIZE))
-				file.write("\nTHREADS,"+str(THREADS))
+			# Write the final models
+			for i in range(len(results)):
+				file.write("\n"+attributes[-1]+","+str(i)+",")
+				file.write(results[i][-1])
+			file.write("\n")
 
-				file.close()
-			except:
-				print("[ERROR]", dataset)
+			# Write some parameters
+			file.write("\n\nParameters")
+			file.write("\nPOPULATION_SIZE,"+str(POPULATION_SIZE))
+			file.write("\nMAX_GENERATION,"+str(MAX_GENERATION))
+			file.write("\nTOURNAMENT_SIZE,"+str(TOURNAMENT_SIZE))
+			file.write("\nTHREADS,"+str(THREADS))
+
+			file.close()
+		else:
+			print("Filename: " + OUTPUT_DIR+"m3gp_"+ dataset +" already exists.")
+
 
 if __name__ == '__main__':
 	callm3gp()
