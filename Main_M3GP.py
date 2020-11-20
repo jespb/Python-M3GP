@@ -85,7 +85,9 @@ def run(r,dataset):
 	Tr_X, Tr_Y, Te_X, Te_Y = openAndSplitDatasets(dataset,r)
 
 	# Train a model
-	m3gp = M3GP(Tr_X, Tr_Y, Te_X, Te_Y)
+	m3gp = M3GP()
+	m3gp.fit(Tr_X, Tr_Y, Te_X, Te_Y)
+
 
 	# Obtain training results
 	accuracy  = m3gp.getAccuracyOverTime()

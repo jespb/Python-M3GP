@@ -12,7 +12,10 @@ from .Population import Population
 class M3GP:
 	population = None
 
-	def __init__(self, Tr_X, Tr_Y, Te_X=None, Te_Y=None):
+	def __init__(self):
+		pass
+
+	def fit(self,Tr_X, Tr_Y, Te_X=None, Te_Y=None):
 		setTerminals(Tr_X.columns)
 		Tr_X["Class"] = Tr_Y
 		Tr_X = [ list(sample) for sample in Tr_X.iloc]
@@ -21,16 +24,15 @@ class M3GP:
 		setTrainingSet(Tr_X)
 		setTestSet(Te_X)
 
-
 		self.population = Population()
 		self.population.train()
 		self.getBestIndividual().prun()
 
-	def predict(self, sample):
+	def predict(self, dataset):
 		'''
-		Returns the predicted class for a sample.
+		Returns the predictions for the samples in a dataset.
 		'''
-		return self.population.getBestIndividual().predict(sample)
+		return [self.population.getBestIndividual().predict(sample) for sample in dataset]
 
 	def getBestIndividual(self):
 		'''
