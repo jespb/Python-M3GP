@@ -37,11 +37,7 @@ class Node:
 			else:
 				return getTerminals()[self.value]
 		else:
-			try:
-				return "( " + str(self.left) + " " + OPERATORS[self.value] + " " + str(self.right) + " )"
-			except:
-				print(self.value)
-				print(1/0)
+			return "( " + str(self.left) + " " + OPERATORS[self.value] + " " + str(self.right) + " )"
 
 
 	def getSize(self):
@@ -111,7 +107,11 @@ class Node:
 			if isinstance(self.value,str):
 				return float(self.value)
 			else:
-				return sample[self.value]
+				try:
+					return sample[self.value]
+				except:
+					print(sample, self.value)
+					print(1/0)
 		else:
 			if self.value == 0: #+
 				return self.left.calculate(sample) + self.right.calculate(sample)
@@ -122,6 +122,7 @@ class Node:
 			if self.value == 3: #/
 				right = self.right.calculate(sample)
 				return self.left.calculate(sample) if right == 0 else self.left.calculate(sample) / self.right.calculate(sample)
+
 
 	def isLeaf(self):
 		'''

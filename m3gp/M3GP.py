@@ -17,10 +17,10 @@ class M3GP:
 
 	def fit(self,Tr_X, Tr_Y, Te_X=None, Te_Y=None):
 		setTerminals(Tr_X.columns)
-		Tr_X["Class"] = Tr_Y
-		Tr_X = [ list(sample) for sample in Tr_X.iloc]
-		Te_X["Class"] = Te_Y
-		Te_X = [ list(sample) for sample in Te_X.iloc]
+		
+		Tr_X = [ [float(x) for x in list(Tr_X.iloc[sample_id])] + [Tr_Y[sample_id]] for sample_id in range(Tr_X.shape[0])]
+		Te_X = [ [float(x) for x in list(Te_X.iloc[sample_id])] + [Te_Y[sample_id]] for sample_id in range(Te_X.shape[0])]
+		
 		setTrainingSet(Tr_X)
 		setTestSet(Te_X)
 
