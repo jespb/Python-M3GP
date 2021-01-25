@@ -15,6 +15,12 @@ class M3GP:
 	def __init__(self):
 		pass
 
+	def __str__(self):
+		if self.population != None:
+			return str(self.getBestIndividual())
+		else:
+			return "[M3GP] Please train a model using my 'fit' method before printing me."
+
 	def fit(self,Tr_X, Tr_Y, Te_X=None, Te_Y=None):
 		setTerminals(Tr_X.columns)
 		

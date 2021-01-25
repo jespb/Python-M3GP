@@ -1,8 +1,12 @@
 By using this file, you are agreeing to this product's EULA
 This product can be obtained in https://github.com/jespb/Python-M3GP
-Copyright ©2019 J. E. Batista
+Copyright ©2019-2021 J. E. Batista
 
-This implementation of M3GP uses the following command and flags:
+
+This file contains information about the command and flags used in the stand-alone version of this implementation and an explanation on how to import, use and edit this implementation.
+
+
+This implementation of M3GP can be used in a stand-alone fashion using the following command and flags:
 
 $ python Main_M3GP.py
 	
@@ -64,6 +68,40 @@ $ python Main_M3GP.py
 
 	[-s]
 		- This flag will remove all outputs
-		
+	
+
+
+How to import this implementation to your project:
+	- Download this repository;
+	- Copy the "m3gp/" directory to your project directory;
+	- import the M3GP class using "from m3gp.M3GP import M3GP".
+
+How to use this implementation:
+	$ from m3gp.M3GP import M3GP
+	$ model = M3GP()
+	$ model.fit( training_x, training_y, test_x, test_y )
+
+Useful methods:
+	$ model.predict(dataset)    -> Returns a list with the prediction of the given dataset;
+	$ getBestIndividual(self)   -> Returns the final model;
+	$ getAccuracyOverTime(self) -> Returns two lists containing the training and test accuracy of the best model in each generation, respectively; 
+	$ getWaFOverTime(self)      -> Returns two lists containing the training and test WaF of the best model in each generation, respectively; 
+	$ getKappaOverTime(self     -> Returns two lists containing the training and test Kappa of the best model in each generation, respectively;
+	$ getSizesOverTime(self)    -> Returns two lists containing the total size and number of dimensions of the best model in each generation, respectively;
+
+How to edit this implementation:
+	Fitness Function ( m3gp.Individual ):
+		- Change the getFitness() method to use your own fitness function;
+		- This implementation assumes that a higher fitness is always better. To change this, edit the __gt__ method in this class;
+		- You may use the getTrainingPredictions() and getTrainingSet() to obtain the models prediction and the training set;
+		- You can also explore the behind the standard fitness function;
+		- Warning: M3GP is a slow method and, as such, I do not recomend complex fitness functions. You should invest in fast evaluation methods to train a population.
+
+	Classification method ( m3gp.Individual ):
+		- Change the trainModel() method to use your own classifier;
+		- Assuming it is a scykit-learn implementation, you may only need to change the first few lines of this method;
+		- Warning: M3GP is a slow method and, as such, I do not recomend complex classification model. You should invest in fast classification methods to train a population and the use a more complex method (if you wish) on the final model.
+
+
 Reference:
     Muñoz, L., Trujillo, L., & Silva, S. (2015). M3GP – multiclass classification with GP. In Genetic Programming - 18th European Conference, EuroGP 2015, Proceedings (Vol. 9025, pp. 78-91). (Lecture Notes in Computer Science (including subseries Lecture Notes in Artificial Intelligence and Lecture Notes in Bioinformatics); Vol. 9025). Springer-Verlag. https://doi.org/10.1007/978-3-319-16501-1_7
