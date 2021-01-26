@@ -38,7 +38,9 @@ class M3GP:
 		'''
 		Returns the predictions for the samples in a dataset.
 		'''
-		return [self.population.getBestIndividual().predict(sample) for sample in dataset]
+		ds = [ list(dataset.iloc[sample_id])  for sample_id in range(dataset.shape[0])]
+
+		return self.population.getBestIndividual().predict(ds)
 
 	def getBestIndividual(self):
 		'''

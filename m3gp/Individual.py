@@ -235,6 +235,9 @@ class Individual:
 		'''
 		Returns the class prediction of a sample.
 		'''
+		if self.model == None:
+			self.trainModel()
+			
 		hyper_X = self.convert(X)
 		predictions = self.model.predict(hyper_X)
 
