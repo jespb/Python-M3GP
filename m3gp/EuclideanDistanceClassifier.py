@@ -1,5 +1,13 @@
 from .Util import *
 
+# 
+# By using this file, you are agreeing to this product's EULA
+#
+# This product can be obtained in https://github.com/jespb/Python-M3GP
+#
+# Copyright ©2019-2021 J. E. Batista
+#
+
 class EuclideanDistanceClassifier:
 
 	classCentroids = None
