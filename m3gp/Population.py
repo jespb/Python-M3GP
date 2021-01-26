@@ -29,22 +29,26 @@ class Population:
 
 	generationTime = None
 
+	standAlone = None
 
-	def __init__(self):
+	def __init__(self, standAlone = False):
+		self.standAlone = standAlone
+
 		self.population = []
 		while len(self.population) < POPULATION_SIZE:
 			self.population.append(Individual())
 		self.bestIndividual = self.population[0]
 
-		self.trainingAccuracyOverTime = []
-		self.testAccuracyOverTime = []
-		self.trainingWaFOverTime = []
-		self.testWaFOverTime = []
-		self.trainingKappaOverTime = []
-		self.testKappaOverTime = []
-		self.sizeOverTime = []
-		self.dimensionsOverTime = []
-		self.generationTimes = []
+		if self.standAlone:
+			self.trainingAccuracyOverTime = []
+			self.testAccuracyOverTime = []
+			self.trainingWaFOverTime = []
+			self.testWaFOverTime = []
+			self.trainingKappaOverTime = []
+			self.testKappaOverTime = []
+			self.sizeOverTime = []
+			self.dimensionsOverTime = []
+			self.generationTimes = []
 
 
 	def stoppingCriteria(self):
@@ -73,17 +77,18 @@ class Population:
 				duration = t2-t1
 			else:
 				duration = 0
-
 			self.currentGeneration += 1
-			self.trainingAccuracyOverTime.append(self.bestIndividual.getTrainingAccuracy())
-			self.testAccuracyOverTime.append(self.bestIndividual.getTestAccuracy())
-			self.trainingWaFOverTime.append(self.bestIndividual.getTrainingWaF())
-			self.testWaFOverTime.append(self.bestIndividual.getTestWaF())
-			self.trainingKappaOverTime.append(self.bestIndividual.getTrainingKappa())
-			self.testKappaOverTime.append(self.bestIndividual.getTestKappa())
-			self.sizeOverTime.append(self.bestIndividual.getSize())
-			self.dimensionsOverTime.append(self.bestIndividual.getNumberOfDimensions())
-			self.generationTimes.append(duration)
+
+			if self.standAlone:
+				self.trainingAccuracyOverTime.append(self.bestIndividual.getTrainingAccuracy())
+				self.testAccuracyOverTime.append(self.bestIndividual.getTestAccuracy())
+				self.trainingWaFOverTime.append(self.bestIndividual.getTrainingWaF())
+				self.testWaFOverTime.append(self.bestIndividual.getTestWaF())
+				self.trainingKappaOverTime.append(self.bestIndividual.getTrainingKappa())
+				self.testKappaOverTime.append(self.bestIndividual.getTestKappa())
+				self.sizeOverTime.append(self.bestIndividual.getSize())
+				self.dimensionsOverTime.append(self.bestIndividual.getNumberOfDimensions())
+				self.generationTimes.append(duration)
 
 		if VERBOSE:
 			print()
@@ -129,7 +134,10 @@ class Population:
 
 		# Debug
 		if VERBOSE and self.currentGeneration%5==0:
-			print("   > Gen #"+str(self.currentGeneration)+":  Tr-Acc: "+ "%.6f" %self.bestIndividual.getTrainingAccuracy()+" // Te-Acc: "+ "%.6f" %self.bestIndividual.getTestAccuracy() + " // Begin: " + begin + " // End: " + end)
+			if self.standAlone:
+				print("   > Gen #"+str(self.currentGeneration)+":  Tr-Acc: "+ "%.6f" %self.bestIndividual.getTrainingAccuracy()+" // Te-Acc: "+ "%.6f" %self.bestIndividual.getTestAccuracy() + " // Begin: " + begin + " // End: " + end)
+			else:
+				print("   > Gen #"+str(self.currentGeneration)+":  Tr-Acc: "+ "%.6f" %self.bestIndividual.getTrainingAccuracy())
 
 
 	def predict(self, sample):

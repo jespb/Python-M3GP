@@ -21,7 +21,20 @@ class M3GP:
 		else:
 			return "[M3GP] Please train a model using my 'fit' method before printing me."
 
-	def fit(self,Tr_X, Tr_Y, Te_X=None, Te_Y=None):
+
+	def fit(self,Tr_X, Tr_Y):
+		setTerminals(Tr_X.columns)
+		
+		Tr_X = [ [float(x) for x in list(Tr_X.iloc[sample_id])] + [Tr_Y.iloc[sample_id]] for sample_id in range(Tr_X.shape[0])]
+		
+		setTrainingSet(Tr_X)
+
+		self.population = Population()
+		self.population.train()
+		self.getBestIndividual().prun()
+
+
+	def fit_standAlone(self,Tr_X, Tr_Y, Te_X, Te_Y):
 		setTerminals(Tr_X.columns)
 		
 		Tr_X = [ [float(x) for x in list(Tr_X.iloc[sample_id])] + [Tr_Y.iloc[sample_id]] for sample_id in range(Tr_X.shape[0])]
@@ -30,7 +43,7 @@ class M3GP:
 		setTrainingSet(Tr_X)
 		setTestSet(Te_X)
 
-		self.population = Population()
+		self.population = Population(standAlone = True)
 		self.population.train()
 		self.getBestIndividual().prun()
 

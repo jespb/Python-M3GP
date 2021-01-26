@@ -163,7 +163,7 @@ class Individual:
 		self.getTrainingPredictions()
 
 		ds = getTrainingSet()
-		y = [ str(s[-1]) for s in ds]
+		y = [ s[-1] for s in ds]
 		return accuracy_score(self.trainingPredictions, y)
 	
 	def getTestAccuracy(self):
@@ -173,7 +173,7 @@ class Individual:
 		self.getTestPredictions()
 
 		ds = getTestSet()
-		y = [ str(s[-1]) for s in ds]
+		y = [ s[-1] for s in ds]
 		return accuracy_score(self.testPredictions, y)
 
 	def getTrainingWaF(self):
@@ -183,7 +183,7 @@ class Individual:
 		self.getTrainingPredictions()
 
 		ds = getTrainingSet()
-		y = [ str(s[-1]) for s in ds]
+		y = [ s[-1] for s in ds]
 		return f1_score(self.trainingPredictions, y, average = "weighted")
 
 	def getTestWaF(self):
@@ -193,7 +193,7 @@ class Individual:
 		self.getTestPredictions()
 
 		ds = getTestSet()
-		y = [ str(s[-1]) for s in ds]
+		y = [ s[-1] for s in ds]
 		return f1_score(self.testPredictions, y, average="weighted")
 
 	def getTrainingKappa(self):
@@ -203,7 +203,7 @@ class Individual:
 		self.getTrainingPredictions()
 
 		ds = getTrainingSet()
-		y = [ str(s[-1]) for s in ds]
+		y = [ s[-1] for s in ds]
 		return cohen_kappa_score(self.trainingPredictions, y)
 
 	def getTestKappa(self):
@@ -213,7 +213,7 @@ class Individual:
 		self.getTestPredictions()
 
 		ds = getTestSet()
-		y = [ str(s[-1]) for s in ds]
+		y = [ s[-1] for s in ds]
 		return cohen_kappa_score(self.testPredictions, y)
 
 

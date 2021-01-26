@@ -20,12 +20,12 @@ class MahalanobisDistanceClassifier:
 		self.classes = []
 		clusters = []
 		for sample in Y:
-			if not str(sample) in self.classes:
-				self.classes.append(str(sample))
+			if not sample in self.classes:
+				self.classes.append(sample)
 				clusters.append([])
 
 		for sample_index in range(len(X)):
-			index = self.classes.index(str(Y[sample_index]))
+			index = self.classes.index(Y[sample_index])
 			coor = X[sample_index]
 			clusters[index].append(coor)
 
