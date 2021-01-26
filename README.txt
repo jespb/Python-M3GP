@@ -14,10 +14,6 @@ $ python Main_M3GP.py
 		- This flag expects a set of csv dataset names separated by ";" (e.g., a.csv;b.csv)
 		- By default, the heart.csv dataset is used		
 
-	[-dontshuffle]
-		- By using this flag, the dataset will not be shuffled;
-		- By default, the dataset is shuffled.
-
 	[-dsdir dir] 
 		- States the dataset directory. 
 		- By default "datasets/" is used 

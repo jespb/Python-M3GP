@@ -5,6 +5,8 @@ from sys import argv
 from m3gp.Constants import *
 import os
 
+from sklearn.model_selection import train_test_split
+
 import numpy as np
 
 
@@ -26,53 +28,11 @@ def openAndSplitDatasets(which,seed):
 	# Open dataset
 	ds = pandas.read_csv(DATASETS_DIR+which)
 
-	# Set features as float
-	col = list(ds)
-	for i in range(len(col)-1):
-		ds[col[i]] = ds[col[i]].astype(float)
-
-
-	# Shuffle dataset
-	if SHUFFLE:
-		ds = ds.sample(frac=1,random_state=seed) 
-
 	# Read header
 	class_header = ds.columns[-1]
-	terminals = list(ds.columns[:-1])
 
-	# Obtain list of classes
-	classes = list( set( ds[ class_header ] ) )
-
-	# Split the dataset maintaining the class balance
-	ret = [ [] for i in range(2)]
-	for c in classes:
-		classe = ds.loc[ds[class_header] == c]
-		for i in range(classe.shape[0]):
-			if  i < TRAIN_FRACTION * len(classe):
-				ret[0].append(list(classe.iloc[i]))
-			else:
-				ret[1].append(list(classe.iloc[i]))
-
-	# Convert dataset to Pandas
-	ret[0] = pandas.DataFrame( np.array(ret[0]))
-	ret[1] = pandas.DataFrame( np.array(ret[1]))
-	ret[0].columns = terminals+[class_header]
-	ret[1].columns = terminals+[class_header]
-
-	# Split Features from Class
-	ret[0] = ( ret[0].drop(class_header, axis = 1), ret[0][class_header] )
-	ret[1] = ( ret[1].drop(class_header, axis = 1), ret[1][class_header] ) 
-
-
-	if VERBOSE:
-		print("   > Attributes: ", terminals)
-		print("   > Classes: ", classes)
-		print("   > Training set size: ", len(ret[0][0]))
-		print("   > Test set size: ", len(ret[1][0]))
-		print()
-
-
-	return (ret[0][0], ret[0][1], ret[1][0], ret[1][1])
+	return train_test_split(ds.drop(columns=[class_header]), ds[class_header], 
+		train_size=TRAIN_FRACTION, random_state=seed)
 
 
 def run(r,dataset):
@@ -82,7 +42,7 @@ def run(r,dataset):
 		print("  > Dataset:", dataset)
 		print()
 
-	Tr_X, Tr_Y, Te_X, Te_Y = openAndSplitDatasets(dataset,r)
+	Tr_X, Te_X, Tr_Y, Te_Y = openAndSplitDatasets(dataset,r)
 
 	# Train a model
 	m3gp = M3GP()
