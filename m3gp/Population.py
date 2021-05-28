@@ -139,8 +139,6 @@ class Population:
 		'''
 		begin = time.time()
 		
-		print( [ind.getNumberOfDimensions() for ind in self.population] )
-
 		# Calculates the accuracy of the population using multiprocessing
 		if self.threads > 1:
 			with mp.Pool(processes= self.threads) as pool:
