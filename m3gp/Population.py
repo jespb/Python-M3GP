@@ -1,9 +1,7 @@
 from .Individual import Individual
-from .Constants import *
-from .GeneticOperators import getElite, getOffspring
+from .GeneticOperators import getElite, getOffspring, discardDeep
 import multiprocessing as mp
 import time
-import datetime
 
 # 
 # By using this file, you are agreeing to this product's EULA
@@ -14,6 +12,18 @@ import datetime
 #
 
 class Population:
+	operators = None
+	max_depth = None
+	population_size = None
+	max_generation = None
+	tournament_size = None
+	elitism_size = None
+	limit_depth = None
+	verbose = None
+	threads = None
+	terminals = None
+
+
 	population = None
 	bestIndividual = None
 	currentGeneration = 0
@@ -27,19 +37,41 @@ class Population:
 	sizeOverTime = None
 	dimensionsOverTime = None
 
-	generationTime = None
+	generationTimes = None
 
-	standAlone = None
 
-	def __init__(self, standAlone = False):
-		self.standAlone = standAlone
+	def __init__(self, Tr_x, Tr_y, Te_x, Te_y, operators,max_depth,population_size,max_generation,tournament_size,
+		elitism_size, limit_depth, threads, verbose):
+
+		self.Tr_x = Tr_x
+		self.Tr_y = Tr_y
+		self.Te_x = Te_x
+		self.Te_y = Te_y
+
+		self.terminals = list(Tr_x.columns)
+		self.operators = operators
+		self.max_depth = max_depth
+		self.population_size = population_size
+		self.max_generation = max_generation
+		self.tournament_size = tournament_size
+		self.elitism_size = elitism_size
+		self.limit_depth = limit_depth
+		self.threads = threads
+		self.verbose = verbose
+
 
 		self.population = []
-		while len(self.population) < POPULATION_SIZE:
-			self.population.append(Individual())
-		self.bestIndividual = self.population[0]
 
-		if self.standAlone:
+		while len(self.population) < self.population_size:
+			ind = Individual(self.operators, self.terminals, self.max_depth)
+			ind.create()
+			self.population.append(ind)
+
+		self.bestIndividual = self.population[0]
+		self.bestIndividual.fit(self.Tr_x, self.Tr_y)
+
+
+		if not self.Te_x is None:
 			self.trainingAccuracyOverTime = []
 			self.testAccuracyOverTime = []
 			self.trainingWaFOverTime = []
@@ -55,7 +87,7 @@ class Population:
 		'''
 		Returns True if the stopping criteria was reached.
 		'''
-		genLimit = self.currentGeneration >= MAX_GENERATION
+		genLimit = self.currentGeneration >= self.max_generation
 		perfectTraining = self.bestIndividual.getFitness() == 1
 		
 		return genLimit  or perfectTraining
@@ -65,11 +97,10 @@ class Population:
 		'''
 		Training loop for the algorithm.
 		'''
-		if VERBOSE:
+		if self.verbose:
 			print("> Running log:")
 
-		while self.currentGeneration < MAX_GENERATION:
-			
+		while self.currentGeneration < self.max_generation:
 			if not self.stoppingCriteria():
 				t1 = time.time()
 				self.nextGeneration()
@@ -78,19 +109,19 @@ class Population:
 			else:
 				duration = 0
 			self.currentGeneration += 1
-
-			if self.standAlone:
-				self.trainingAccuracyOverTime.append(self.bestIndividual.getTrainingAccuracy())
-				self.testAccuracyOverTime.append(self.bestIndividual.getTestAccuracy())
-				self.trainingWaFOverTime.append(self.bestIndividual.getTrainingWaF())
-				self.testWaFOverTime.append(self.bestIndividual.getTestWaF())
-				self.trainingKappaOverTime.append(self.bestIndividual.getTrainingKappa())
-				self.testKappaOverTime.append(self.bestIndividual.getTestKappa())
+			
+			if not self.Te_x is None:
+				self.trainingAccuracyOverTime.append(self.bestIndividual.getAccuracy(self.Tr_x, self.Tr_y, pred="Tr"))
+				self.testAccuracyOverTime.append(self.bestIndividual.getAccuracy(self.Te_x, self.Te_y, pred="Te"))
+				self.trainingWaFOverTime.append(self.bestIndividual.getWaF(self.Tr_x, self.Tr_y, pred="Tr"))
+				self.testWaFOverTime.append(self.bestIndividual.getWaF(self.Te_x, self.Te_y, pred="Te"))
+				self.trainingKappaOverTime.append(self.bestIndividual.getKappa(self.Tr_x, self.Tr_y, pred="Tr"))
+				self.testKappaOverTime.append(self.bestIndividual.getKappa(self.Te_x, self.Te_y, pred="Te"))
 				self.sizeOverTime.append(self.bestIndividual.getSize())
 				self.dimensionsOverTime.append(self.bestIndividual.getNumberOfDimensions())
 				self.generationTimes.append(duration)
 
-		if VERBOSE:
+		if self.verbose:
 			print()
 
 
@@ -100,22 +131,25 @@ class Population:
 		Generation algorithm: the population is sorted; the best individual is pruned;
 		the elite is selected; and the offspring are created.
 		'''
-		begin = datetime.datetime.now()
+		begin = time.time()
 		
-		begin = str(begin.hour)+"h"+str(begin.minute)+"m"+str(begin.second)
 
 		# Calculates the accuracy of the population using multiprocessing
-		if THREADS > 1:
-			with mp.Pool(processes= THREADS) as pool:
-				fitArray = pool.map(getTrainingPredictions, [ind for ind in self.population] )
+		if self.threads > 1:
+			with mp.Pool(processes= self.threads) as pool:
+				model = pool.map(fitIndividuals, [(ind, self.Tr_x, self.Tr_y) for ind in self.population] )
 				for i in range(len(self.population)):
-					self.population[i].trainingPredictions = fitArray[i][0]
-					self.population[i].model = fitArray[i][1]
-	        
-
+					self.population[i].model = model[i][0]
+					self.population[i].trainingPredictions = model[i][1]
+					self.population[i].training_X = self.Tr_x
+					self.population[i].training_Y = self.Tr_y
+		else:
+			[ ind.fit(self.Tr_x, self.Tr_y) for ind in self.population]
+			[ ind.getFitness() for ind in self.population ]
 
 		# Sort the population from best to worse
 		self.population.sort(reverse=True)
+
 
 		# Update best individual
 		if self.population[0] > self.bestIndividual:
@@ -124,20 +158,22 @@ class Population:
 
 		# Generating Next Generation
 		newPopulation = []
-		newPopulation.extend(getElite(self.population))
-		while len(newPopulation) < POPULATION_SIZE:
-			newPopulation.extend(getOffspring(self.population))
-		self.population = newPopulation[:POPULATION_SIZE]
+		newPopulation.extend(getElite(self.population, self.elitism_size))
+		while len(newPopulation) < self.population_size:
+			offspring = getOffspring(self.population, self.tournament_size)
+			offspring = discardDeep(offspring, self.max_depth)
+			newPopulation.extend(offspring)
+		self.population = newPopulation[:self.population_size]
 
-		end = datetime.datetime.now()
-		end = str(end.hour)+"h"+str(end.minute)+"m"+str(end.second)
+
+		end = time.time()
 
 		# Debug
-		if VERBOSE and self.currentGeneration%5==0:
-			if self.standAlone:
-				print("   > Gen #"+str(self.currentGeneration)+":  Tr-Acc: "+ "%.6f" %self.bestIndividual.getTrainingAccuracy()+" // Te-Acc: "+ "%.6f" %self.bestIndividual.getTestAccuracy() + " // Begin: " + begin + " // End: " + end)
+		if self.verbose and self.currentGeneration%5==0:
+			if not self.Te_x is None:
+				print("   > Gen #"+str(self.currentGeneration)+":  Tr-Acc: "+ "%.6f" %self.bestIndividual.getAccuracy(self.Tr_x, self.Tr_y)+" // Te-Acc: "+ "%.6f" %self.bestIndividual.getAccuracy(self.Te_x, self.Te_y) + " // Time: " + str(end- begin) )
 			else:
-				print("   > Gen #"+str(self.currentGeneration)+":  Tr-Acc: "+ "%.6f" %self.bestIndividual.getTrainingAccuracy())
+				print("   > Gen #"+str(self.currentGeneration)+":  Tr-Acc: "+ "%.6f" %self.bestIndividual.getAccuracy(self.Tr_x, self.Tr_y))
 
 
 	def predict(self, sample):
@@ -180,5 +216,11 @@ class Population:
 def calculateIndividualAccuracy_MultiProcessing(ind, fitArray, indIndex):
 	fitArray[indIndex] = ind.getTrainingAccuracy()
 
+def fitIndividuals(a):
+	ind,x,y = a
+	ind.fit(x,y)
+	
+	return ( ind.model, ind.predict(x) )
+
 def getTrainingPredictions(ind):
-	return [ind.getTrainingPredictions(), ind.model]
+	return ind.getTrainingPredictions()

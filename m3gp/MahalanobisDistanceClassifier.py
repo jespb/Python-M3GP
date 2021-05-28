@@ -1,4 +1,4 @@
-from .Util import *
+import numpy as np
 
 # 
 # By using this file, you are agreeing to this product's EULA
@@ -7,6 +7,62 @@ from .Util import *
 #
 # Copyright ©2019-2021 J. E. Batista
 #
+
+#
+#   This classifier receives panda DataFrames and converts it to standard types
+# to avoid "Infinite" values in the matrices.
+#
+
+def getInverseCovarianceMatrix(cluster):
+	'''
+	Returns the inverse covariance matrix, obtained from a cluster
+	'''
+	ret = []
+	for i in range(len(cluster[0])):
+		ret.append([0]*len(cluster[0]))
+	for d1 in range(len(cluster[0])):
+		for d2 in range(len(cluster[0])):
+			for x in range(len(cluster)):
+				ret[d1][d2] += cluster[x][d1]*cluster[x][d2]/len(cluster)
+	return inverseMatrix(ret)
+	
+def mahalanobisDistance(v1,v2,invCovarianceMatrix):
+	'''
+	Returns the mahalanobis distance between two points
+	'''
+	if invCovarianceMatrix is None:
+		return euclideanDistance(v1,v2)
+
+	x = np.array(v1)
+	y = np.array(v2)
+
+	sub = np.subtract(x,y)
+	mult = np.matmul(sub,invCovarianceMatrix)
+	if (len(invCovarianceMatrix)==1):
+		mult = [mult]
+	mult2 = np.matmul(mult,sub.transpose())
+
+	if(mult2 < 0):
+		#print("mult2 < 0")
+		return euclideanDistance(v1,v2)
+
+	return mult2**0.5
+
+def euclideanDistance(v1,v2):
+	return sum([(v1[i]-v2[i])**2 for i in range(len(v1))])**0.5
+
+
+def inverseMatrix(m):
+	'''
+	Returns the inverse of the matrix m, if possible,
+	otherwise returns the diagonal matrix
+	'''
+	try:
+		return np.linalg.inv(np.array(m))
+	except:
+		return None
+
+
 
 class MahalanobisDistanceClassifier:
 
@@ -24,13 +80,13 @@ class MahalanobisDistanceClassifier:
 		if self.invCovarianceMatrix != None:
 			return
 
+		X = [ list(sample) for sample in X.iloc ]
+		Y = list(Y)
 
-		self.classes = []
+		self.classes = list(set(Y))
 		clusters = []
-		for sample in Y:
-			if not sample in self.classes:
-				self.classes.append(sample)
-				clusters.append([])
+		for i in self.classes:
+			clusters.append([])
 
 		for sample_index in range(len(X)):
 			index = self.classes.index(Y[sample_index])
@@ -52,8 +108,9 @@ class MahalanobisDistanceClassifier:
 
 	def predict(self, X):		
 		predictions = []
-		for sample in X:
+		X = [ list(sample) for sample in X.iloc ]
 
+		for sample in X:
 			pick_d = mahalanobisDistance(sample, self.classCentroids[0],self.invCovarianceMatrix[0])
 			pick = self.classes[0]
 		

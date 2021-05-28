@@ -1,8 +1,7 @@
 from .Node import Node
-from .Constants import *
-from .Util import *
 from .MahalanobisDistanceClassifier import MahalanobisDistanceClassifier
-from .EuclideanDistanceClassifier import EuclideanDistanceClassifier
+
+import pandas as pd
 
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import f1_score
@@ -18,35 +17,48 @@ from sklearn.metrics import cohen_kappa_score
 #
 
 class Individual:
-	trainingPredictions = None
-	testPredictions = None
+	training_X = None
+	training_Y = None
 
-	size = None
-	depth = None
+	operators = None
+	terminals = None
+	max_depth = None
 
 	dimensions = None
+	size = 0
+	depth = 0
 
-
+	trainingPredictions = None
+	testPredictions = None
 	fitness = None
 
-	model_name = ["MahalanobisDistanceClassifier", "EuclideanDistanceClassifier"][0]
+	model_name = ["MahalanobisDistanceClassifier"][0]
 	model = None
 
 	fitnessType = ["Accuracy", "WAF"][0]
 
-	def __init__(self, dim = None):
-		if dim == None:
-			self.dimensions = [Node(full=True)]
-		else:
-			self.dimensions = dim
+	def __init__(self, operators, terminals, max_depth):
+		self.operators = operators
+		self.terminals = terminals
+		self.max_depth = max_depth
+
+	def create(self):
+		n = Node()
+		n.create(self.operators, self.terminals, self.max_depth, full=True)
+		self.dimensions = [n]
+		
+	def copy(self, dim):
+		self.dimensions = dim
+
+
 
 	def __gt__(self, other):
 		sf = self.getFitness()
-		sd = len(self.getDimensions())
+		sd = len(self.dimensions)
 		ss = self.getSize()
 
 		of = other.getFitness()
-		od = len(other.getDimensions())
+		od = len(other.dimensions)
 		os = other.getSize()
 
 		return (sf > of) or \
@@ -60,31 +72,30 @@ class Individual:
 		return ",".join([str(d) for d in self.dimensions])
 
 
-	def trainModel(self):
+	def fit(self, Tr_x, Tr_y):
 		'''
 		Trains the classifier which will be used in the fitness function
 		'''
-		if self.model == None:
+		if self.model is None:
+			self.training_X = Tr_x
+			self.training_Y = Tr_y
+
 			if self.model_name == "MahalanobisDistanceClassifier":
 				self.model = MahalanobisDistanceClassifier()
 			if self.model_name == "EuclideanDistanceClassifier":
-				self.model = EuclideanDistanceClassifier()
+				self.model = RidgeClassifierCV()
 			
 
-			ds = getTrainingSet()
-			X = [s[:-1] for s in ds]
-			hyper_X = self.convert(X)
-			Y = [s[-1] for s in ds]
-			self.model.fit(hyper_X,Y)
+			hyper_X = self.convert(Tr_x)
 
-
+			self.model.fit(hyper_X,Tr_y)
 
 
 	def getSize(self):
 		'''
 		Returns the total number of nodes within an individual.
 		'''
-		if self.size == None:
+		if not self.size:
 			self.size = sum(n.getSize() for n in self.dimensions)
 		return self.size
 
@@ -92,7 +103,7 @@ class Individual:
 		'''
 		Returns the depth of individual.
 		'''
-		if self.depth == None:
+		if not self.depth:
 			self.depth = max([dimension.getDepth() for dimension in self.dimensions])
 		return self.depth 
 
@@ -118,102 +129,74 @@ class Individual:
 		'''
 		Returns the individual's fitness.
 		'''
-		if self.fitness == None:
+		if self.fitness is None:
+			self.getTrainingPredictions()
+
 			if self.fitnessType == "Accuracy":
-				acc = self.getTrainingAccuracy()
+				acc = accuracy_score(self.trainingPredictions, self.training_Y)
 				self.fitness = acc 
 
 			if self.fitnessType == "WAF":
-				waf = self.getTrainingWaF()
+				waf = f1_score(self.trainingPredictions, self.training_Y, average="weighted")
 				self.fitness = waf 
 
 		return self.fitness
 
 
-
 	def getTrainingPredictions(self):
-		'''
-		Returns the individual's training predictions.
-		'''
-		self.trainModel()
-		if self.trainingPredictions == None:
-			X = [sample[:-1] for sample in getTrainingSet() ]
-			self.trainingPredictions = self.predict(X)
-	
+		if self.trainingPredictions is None:
+			self.trainingPredictions = self.predict(self.training_X)
+
 		return self.trainingPredictions
 
-	def getTestPredictions(self):
-
-		'''
-		Returns the individual's test predictions.
-		'''
-		self.trainModel()
-		if self.testPredictions == None:
-			X = [sample[:-1] for sample in getTestSet() ]
+	def getTestPredictions(self, X):
+		if self.testPredictions is None:
 			self.testPredictions = self.predict(X)
 
 		return self.testPredictions
 
 
-	def getTrainingAccuracy(self):
-		'''
-		Returns the individual's training accuracy.
-		'''
-		self.getTrainingPredictions()
-
-		ds = getTrainingSet()
-		y = [ s[-1] for s in ds]
-		return accuracy_score(self.trainingPredictions, y)
 	
-	def getTestAccuracy(self):
+	def getAccuracy(self, X,Y,pred=None):
 		'''
-		Returns the individual's test accuracy.
+		Returns the individual's accuracy.
 		'''
-		self.getTestPredictions()
+		if pred == "Tr":
+			pred = self.getTrainingPredictions()
+		elif pred == "Te":
+			pred = self.getTestPredictions(X)
+		else:
+			pred = self.predict(X)
 
-		ds = getTestSet()
-		y = [ s[-1] for s in ds]
-		return accuracy_score(self.testPredictions, y)
+		return accuracy_score(pred, Y)
 
-	def getTrainingWaF(self):
-		'''
-		Returns the individual's training WAF.
-		'''
-		self.getTrainingPredictions()
 
-		ds = getTrainingSet()
-		y = [ s[-1] for s in ds]
-		return f1_score(self.trainingPredictions, y, average = "weighted")
-
-	def getTestWaF(self):
+	def getWaF(self, X, Y,pred=None):
 		'''
-		Returns the individual's test WAF.
+		Returns the individual's WAF.
 		'''
-		self.getTestPredictions()
+		if pred == "Tr":
+			pred = self.getTrainingPredictions()
+		elif pred == "Te":
+			pred = self.getTestPredictions(X)
+		else:
+			pred = self.predict(X)
 
-		ds = getTestSet()
-		y = [ s[-1] for s in ds]
-		return f1_score(self.testPredictions, y, average="weighted")
+		return f1_score(pred, Y, average="weighted")
 
-	def getTrainingKappa(self):
+
+	def getKappa(self, X, Y,pred=None):
 		'''
-		Returns the individual's training kappa value.
+		Returns the individual's kappa value.
 		'''
-		self.getTrainingPredictions()
+		if pred == "Tr":
+			pred = self.getTrainingPredictions()
+		elif pred == "Te":
+			pred = self.getTestPredictions(X)
+		else:
+			pred = self.predict(X)
 
-		ds = getTrainingSet()
-		y = [ s[-1] for s in ds]
-		return cohen_kappa_score(self.trainingPredictions, y)
-
-	def getTestKappa(self):
-		'''
-		Returns the individual's test kappa value.
-		'''
-		self.getTestPredictions()
-
-		ds = getTestSet()
-		y = [ s[-1] for s in ds]
-		return cohen_kappa_score(self.testPredictions, y)
+		return cohen_kappa_score(pred, Y)
 
 
 
@@ -223,19 +206,22 @@ class Individual:
 		'''
 		return [self.dimensions[i].calculate(sample) for i in range(len(self.dimensions))]
 
+
 	def convert(self, X):
 		'''
 		Returns the converted input space.
 		'''
-		return [self.calculate(sample) for sample in X]
+		ret = pd.DataFrame()
+		for i in range(len(self.dimensions)):
+			a = self.dimensions[i].calculate(X)
+			ret["#"+str(i)] = a
+		return ret
 
 
 	def predict(self, X):
 		'''
 		Returns the class prediction of a sample.
 		'''
-		if self.model == None:
-			self.trainModel()
 			
 		hyper_X = self.convert(X)
 		predictions = self.model.predict(hyper_X)
@@ -249,14 +235,19 @@ class Individual:
 		Remove the dimensions that degrade the fitness.
 		If simp==True, also simplifies each dimension.
 		'''
+
 		dup = self.dimensions[:]
 		i = 0
-		ind = Individual(dup)
+		ind = Individual(self.operators, self.terminals, self.max_depth)
+		ind.copy(dup)
+		ind.fit(self.training_X, self.training_Y)
 
 		while i < len(dup) and len(dup) > 1:
 			dup2 = dup[:]
 			dup2.pop(i)
-			ind2 = Individual(dup2)
+			ind2 = Individual(self.operators, self.terminals, self.max_depth)
+			ind2.copy(dup2)
+			ind2.fit(self.training_X, self.training_Y)
 
 			if ind2 >= ind:
 				ind = ind2
@@ -270,6 +261,8 @@ class Individual:
 		self.size = None
 		self.depth = None
 		self.model = None
+		self.fit(self.training_X, self.training_Y)
+
 
 		if simp:
 			# Simplify dimensions
@@ -277,6 +270,8 @@ class Individual:
 				done = False
 				while not done:
 					state = str(d)
-					d.prun()
+					d.prun(self.training_X)
 					done = state == str(d)
+
+
 

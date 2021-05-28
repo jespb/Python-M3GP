@@ -8,7 +8,7 @@ This file contains information about the command and flags used in the stand-alo
 
 This implementation of M3GP can be used in a stand-alone fashion using the following command and flags:
 
-$ python Main_M3GP.py
+$ python Main_M3GP_standalone.py
 	
 	[-d datasets] 
 		- This flag expects a set of csv dataset names separated by ";" (e.g., a.csv;b.csv)
@@ -62,8 +62,6 @@ $ python Main_M3GP.py
 		- If the value is set to 1, the multiprocessing library will not be used 
 		- By default, this value is set to 1.
 
-	[-s]
-		- This flag will remove all outputs
 	
 
 
@@ -77,13 +75,27 @@ How to use this implementation:
 	$ model = M3GP()
 	$ model.fit( training_x, training_y, test_x, test_y )
 
+Arguments for model.fit:
+	Tr_X 				-> Training samples
+	Tr_Y 				-> Training labels
+	Te_X 				-> Test samples, used in the standalone version (default: None)
+	Te_Y 				-> Test labels, used in the standalone version (default: None)
+	operators			-> Operators used by the individual (default: ["+","-","*","/"] )
+	max_depth			-> Max initial depths of the individuals (default: 6)
+	population_size		-> Population size (default: 500)
+	max_generation		-> Maximum number of generations (default: 100)
+	tournament_size		-> Tournament size (default: 5)
+	elitism_size		-> Elitism selection size (default: 1)
+	limit_depth			-> Maximum individual depth (default: 17)
+	threads 			-> Number of CPU threads to be used (default: 1)
+
 Useful methods:
-	$ model.predict(dataset)    -> Returns a list with the prediction of the given dataset;
-	$ getBestIndividual(self)   -> Returns the final model;
-	$ getAccuracyOverTime(self) -> Returns two lists containing the training and test accuracy of the best model in each generation, respectively; 
-	$ getWaFOverTime(self)      -> Returns two lists containing the training and test WaF of the best model in each generation, respectively; 
-	$ getKappaOverTime(self     -> Returns two lists containing the training and test Kappa of the best model in each generation, respectively;
-	$ getSizesOverTime(self)    -> Returns two lists containing the total size and number of dimensions of the best model in each generation, respectively;
+	$ model = M3GP()			-> starts the model;
+	$ model.fit(X, Y)			-> fits the model to the dataset;
+	$ model.predict(dataset)    -> Returns a list with the prediction of the given dataset.
+
+
+
 
 How to edit this implementation:
 	Fitness Function ( m3gp.Individual ):

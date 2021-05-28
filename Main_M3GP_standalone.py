@@ -2,12 +2,18 @@ import pandas
 
 from m3gp.M3GP import M3GP
 from sys import argv
-from m3gp.Constants import *
+from Arguments import *
 import os
 
 from sklearn.model_selection import train_test_split
 
 import numpy as np
+
+import warnings
+
+warnings.filterwarnings("ignore", category=FutureWarning,
+                        message="From version 0.21, test_size will always complement",
+                        module="sklearn")
 
 
 # 
@@ -32,7 +38,8 @@ def openAndSplitDatasets(which,seed):
 	class_header = ds.columns[-1]
 
 	return train_test_split(ds.drop(columns=[class_header]), ds[class_header], 
-		train_size=TRAIN_FRACTION, random_state=seed, stratify = ds[class_header])
+		train_size=TRAIN_FRACTION, random_state=seed, 
+		stratify = ds[class_header])
 
 
 def run(r,dataset):
@@ -46,7 +53,9 @@ def run(r,dataset):
 
 	# Train a model
 	m3gp = M3GP()
-	m3gp.fit_standAlone(Tr_X, Tr_Y, Te_X, Te_Y)
+	m3gp.fit(Tr_X, Tr_Y, Te_X, Te_Y, OPERATORS, MAX_DEPTH, 
+		POPULATION_SIZE, MAX_GENERATION, TOURNAMENT_SIZE, ELITISM_SIZE, 
+		LIMIT_DEPTH, THREADS, VERBOSE)
 
 
 	# Obtain training results
@@ -126,10 +135,15 @@ def callm3gp():
 
 			# Write some parameters
 			file.write("\n\nParameters")
-			file.write("\nPOPULATION_SIZE,"+str(POPULATION_SIZE))
-			file.write("\nMAX_GENERATION,"+str(MAX_GENERATION))
-			file.write("\nTOURNAMENT_SIZE,"+str(TOURNAMENT_SIZE))
-			file.write("\nTHREADS,"+str(THREADS))
+			file.write("\nOperators,"+str(OPERATORS))
+			file.write("\nMax Depth,"+str(MAX_DEPTH))
+			file.write("\nPopulation Size,"+str(POPULATION_SIZE))
+			file.write("\nMax Generation,"+str(MAX_GENERATION))
+			file.write("\nTournament Size,"+str(TOURNAMENT_SIZE))
+			file.write("\nElitism Size,"+str(ELITISM_SIZE))
+			file.write("\nDepth Limit,"+str(LIMIT_DEPTH))
+			file.write("\nThreads,"+str(THREADS))
+
 
 			file.close()
 		else:
