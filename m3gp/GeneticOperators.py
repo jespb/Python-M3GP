@@ -33,7 +33,7 @@ def getElite(population,n):
 	return population[:n]
 
 
-def getOffspring(population, tournament_size):
+def getOffspring(population, tournament_size, dim_max, dim_evol):
 	'''
 	Genetic Operator: Selects a genetic operator and returns a list with the 
 	offspring Individuals. The crossover GOs return two Individuals and the
@@ -45,19 +45,23 @@ def getOffspring(population, tournament_size):
 	'''
 	isCross = random()<0.5
 	desc = None
+
+	availableXO = [0,1]
+	availableMT = [0] if dim_evol == "fixed" else [0,1,2] 
+
 	if isCross:
-		isSTXO = random()<0.5
-		if isSTXO:
+		whichXO = availableXO[ randint(0,len(availableXO)-1 ) ]
+		if whichXO == 0:
 			desc = STXO(population, tournament_size)
-		else:
+		elif whichXO == 1:
 			desc = M3XO(population, tournament_size)
 	else:
-		whichMut = randint(1,3)
-		if whichMut == 1:
+		whichMut = availableMT[ randint(0,len(availableMT)-1 ) ]
+		if whichMut == 0:
 			desc = STMUT(population, tournament_size)
+		elif whichMut == 1:
+			desc = M3ADD(population, tournament_size, dim_max)
 		elif whichMut == 2:
-			desc = M3ADD(population, tournament_size)
-		else:
 			desc = M3REM(population, tournament_size)
 	return desc
 
@@ -151,7 +155,7 @@ def STMUT(population, tournament_size):
 	ret.append(i)
 	return ret
 
-def M3ADD(population, tournament_size):
+def M3ADD(population, tournament_size, dim_max):
 	'''
 	Randomly generates a new node using Grow; this node is added to the list of
 	dimensions; the new Individual is returned as the offspring.
@@ -160,15 +164,18 @@ def M3ADD(population, tournament_size):
 	population (list): A list of Individuals, sorted from best to worse.
 	'''
 	ind1 = tournament(population, tournament_size)
-	d1 = ind1.getDimensions()
-	n = Node()
-	n.create(ind1.operators, ind1.terminals, ind1.max_depth)
-	d1.append(n)
-
 	ret = []
-	i = Individual(ind1.operators, ind1.terminals, ind1.max_depth)
-	i.copy(d1)
-	ret.append(i)
+
+	if ind1.getNumberOfDimensions() < dim_max:
+		d1 = ind1.getDimensions()
+		n = Node()
+		n.create(ind1.operators, ind1.terminals, ind1.max_depth)
+		d1.append(n)
+
+		i = Individual(ind1.operators, ind1.terminals, ind1.max_depth)
+		i.copy(d1)
+		ret.append(i)
+
 	return ret
 
 def M3REM(population, tournament_size):
@@ -180,15 +187,15 @@ def M3REM(population, tournament_size):
 	population (list): A list of Individuals, sorted from best to worse.
 	'''
 	ind1 = tournament(population, tournament_size)
-	d1 = ind1.getDimensions()
-	if len(d1)>1:
+	ret = []
+
+	if ind1.getNumberOfDimensions() > 1:
+		d1 = ind1.getDimensions()
 		r1 = randint(0,len(d1)-1)
 		d1.pop(r1)
 		
-		ret = []
 		i = Individual(ind1.operators, ind1.terminals, ind1.max_depth)
 		i.copy(d1)
 		ret.append(i)
-	else:
-		ret = []
+	
 	return ret

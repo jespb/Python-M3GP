@@ -8,18 +8,52 @@ from sys import argv
 # Copyright ©2019-2021 J. E. Batista
 #
 
+
+# Operators to be used by the models
+# Only these operators are available. To add mode, edit m3gp.Node.calculate(self, sample)
 OPERATORS = ["+","-","*","/"]
+
+# Initial Maximum depth
 MAX_DEPTH = 6
+
+# Number of models in the population
 POPULATION_SIZE = 500
+
+# Maximum number of iterations
 MAX_GENERATION = 100
+
+# Fraction of the dataset to be used as training (used by Main_M3GP_standalone.py)
 TRAIN_FRACTION = 0.70
+
+# Number of individuals to be used in the tournament
 TOURNAMENT_SIZE = 5
+
+# Number of best individuals to be automatically moved to the next generation
 ELITISM_SIZE = 1
+
+# Shuffle the dataset (used by Main_M3GP_standalone.py)
 SHUFFLE = True
+
+# Dimensions maximum depth
 LIMIT_DEPTH=17
+
+# Number of runs (used by Main_M3GP_standalone.py)
 RUNS = 30
+
+# Verbose
 VERBOSE = True
+
+# Number of CPU Threads to be used
 THREADS = 1
+
+# Initial number of dimensions
+DIM_INIT = 1
+
+# An unreachable number of dimensions
+DIM_MAX = 9999 
+
+# Do you want the number of dimensions to change or be fixed?
+DIM_EVOL = ["evol", "fixed"] [0]
 
 
 DATASETS_DIR = "datasets/"
@@ -72,5 +106,14 @@ if "-s" in argv:
 
 if "-t" in argv:
 	THREADS = int(argv[argv.index("-t")+1])
+
+if "-di" in argv:
+	DIM_INIT = int(argv[argv.index("-di")+1])
+
+if "-dm" in argv:
+	DIM_MAX = int(argv[argv.index("-dm")+1])
+
+if "-de" in argv:
+	DIM_EVOL = argv[argv.index("-de")+1]
 
 

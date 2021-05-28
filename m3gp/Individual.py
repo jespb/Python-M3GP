@@ -42,10 +42,12 @@ class Individual:
 		self.terminals = terminals
 		self.max_depth = max_depth
 
-	def create(self):
-		n = Node()
-		n.create(self.operators, self.terminals, self.max_depth, full=True)
-		self.dimensions = [n]
+	def create(self,n_dims=1):
+		self.dimensions = []
+		for i in range(n_dims):
+			n = Node()
+			n.create(self.operators, self.terminals, self.max_depth, full=True)
+			self.dimensions.append(n)
 		
 	def copy(self, dim):
 		self.dimensions = dim
@@ -54,11 +56,11 @@ class Individual:
 
 	def __gt__(self, other):
 		sf = self.getFitness()
-		sd = len(self.dimensions)
+		sd = self.getNumberOfDimensions()
 		ss = self.getSize()
 
 		of = other.getFitness()
-		od = len(other.dimensions)
+		od = other.getNumberOfDimensions()
 		os = other.getSize()
 
 		return (sf > of) or \

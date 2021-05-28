@@ -33,9 +33,10 @@ class M3GP:
 		return str(self.getBestIndividual())
 		
 
-	def fit(self,Tr_X, Tr_Y, Te_X = None, Te_Y = None, operators=["+","-","*","/"], max_depth = 6, 
-		population_size = 500, max_generation = 100, tournament_size = 5, elitism_size = 1, 
-		limit_depth = 17, threads=1, verbose = True):
+	def fit(self,Tr_X, Tr_Y, Te_X = None, Te_Y = None, operators=["+","-","*","/"], 
+		max_depth = 6, population_size = 500, max_generation = 100, 
+		tournament_size = 5, elitism_size = 1, limit_depth = 17, dim_init = 1, 
+		dim_max = 9999, dim_evol = "evol", threads=1, verbose = True):
 		if verbose:
 			print("Training a model with the following parameters: ", end="")
 			print("{Operators : "+str(operators)+"}, ", end="")
@@ -45,11 +46,18 @@ class M3GP:
 			print("{Tournament Size : "+str(tournament_size)+"}, ", end="")
 			print("{Elitism Size : "+str(elitism_size)+"}, ", end="")
 			print("{Depth Limit : "+str(limit_depth)+"}, ", end="")
+			print("{Initial No. Dims: "+str(dim_init)+"}, ", end="")
+			print("{Maximum No. Dims: "+str(dim_max)+"}, ", end="")
+			print("{No. Dims evolution: "+str(dim_evol)+"}, ", end="")
 			print("{Threads : "+str(threads)+"}, ", end="")
 
-		self.population = Population(Tr_X, Tr_Y, Te_X, Te_Y, operators,max_depth,population_size,max_generation,tournament_size,elitism_size, limit_depth,threads, verbose)
+		self.population = Population(Tr_X, Tr_Y, Te_X, Te_Y, operators,max_depth,
+			population_size,max_generation,tournament_size,elitism_size, limit_depth, 
+			dim_init, dim_max, dim_evol, threads, verbose)
 		self.population.train()
-		self.getBestIndividual().prun()
+
+		if dim_evol != "fixes":
+			self.getBestIndividual().prun()
 
 
 	def predict(self, dataset):
