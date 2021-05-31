@@ -88,19 +88,24 @@ How to use this implementation:
 	$ model = M3GP()
 	$ model.fit( training_x, training_y, test_x, test_y )
 
-Arguments for model.fit:
+Arguments for M3GP():
+	operators			-> Operators used by the individual (default: ["+","-","*","/"] )
+	max_depth			-> Max initial depths of the individuals (default: 6)
+	population_size			-> Population size (default: 500)
+	max_generation			-> Maximum number of generations (default: 100)
+	tournament_size			-> Tournament size (default: 5)
+	elitism_size			-> Elitism selection size (default: 1)
+	limit_depth			-> Maximum individual depth (default: 17)
+	threads 			-> Number of CPU threads to be used (default: 1)
+	dim_min				-> Minimum number of dimensions (default: 1)
+	dim_max				-> Maximum number of dimensions (default: 9999) #The algorithm will not reach this value
+
+Arguments for model.fit():
 	Tr_X 				-> Training samples
 	Tr_Y 				-> Training labels
 	Te_X 				-> Test samples, used in the standalone version (default: None)
 	Te_Y 				-> Test labels, used in the standalone version (default: None)
-	operators			-> Operators used by the individual (default: ["+","-","*","/"] )
-	max_depth			-> Max initial depths of the individuals (default: 6)
-	population_size		-> Population size (default: 500)
-	max_generation		-> Maximum number of generations (default: 100)
-	tournament_size		-> Tournament size (default: 5)
-	elitism_size		-> Elitism selection size (default: 1)
-	limit_depth			-> Maximum individual depth (default: 17)
-	threads 			-> Number of CPU threads to be used (default: 1)
+
 
 Useful methods:
 	$ model = M3GP()			-> starts the model;
