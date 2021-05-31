@@ -65,19 +65,15 @@ $ python Main_M3GP_standalone.py
 		- If the value is set to 1, the multiprocessing library will not be used 
 		- By default, this value is set to 1.
 
-	[-di initial_number_of_dimension]
-		- This flag expects an integer with the number of dimensions in each individual when creating the initial population;
+	[-di minimum_number_of_dimension]
+		- This flag expects an integer with the minimum number of dimensions in each individual;
+		- This flag affects the number of dimensions in the initial individuals;
 		- By default, this value is set to 1
 
 	[-dm maximum_number_of_dimension]
 		- This flag expects an integer with the maximum number of dimensions in each individual;
 		- By default, this value is set to 9999
 
-	[-de evolution_of_the_number_of_dimensions]
-		- This flag expects a string with the value "evol" or "fixed";
-			- evol: The number of dimensions is evolved during the evolution;
-			- fixed: The number of dimensions is fixed (The dimensions are never removed nor added).
-		- By default, this flag is set to "evol"
 
 	
 

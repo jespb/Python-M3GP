@@ -232,7 +232,7 @@ class Individual:
 
 
 
-	def prun(self,simp=True):
+	def prun(self,min_dim=1,simp=True):
 		'''
 		Remove the dimensions that degrade the fitness.
 		If simp==True, also simplifies each dimension.
@@ -244,7 +244,7 @@ class Individual:
 		ind.copy(dup)
 		ind.fit(self.training_X, self.training_Y)
 
-		while i < len(dup) and len(dup) > 1:
+		while i < len(dup) and len(dup) > min_dim:
 			dup2 = dup[:]
 			dup2.pop(i)
 			ind2 = Individual(self.operators, self.terminals, self.max_depth)

@@ -19,12 +19,40 @@ class ClassifierNotTrainedError(Exception):
 class M3GP:
 	population = None
 
+	operators = None
+	max_depth = None
+	population_size = None
+	max_generation = None
+	tournament_size = None
+	elitism_size = None
+	limit_depth =None
+	dim_min = None
+	dim_max = None
+	threads = None
+	verbose = None
+
 	def checkIfTrained(self):
 		if self.population == None:
 			raise ClassifierNotTrainedError("The classifier must be trained using the fit(Tr_X, Tr_Y) method before being used.")
 
 
-	def __init__(self):
+	def __init__(self, operators=["+","-","*","/"], max_depth = 6, population_size = 500, 
+		max_generation = 100, tournament_size = 5, elitism_size = 1, limit_depth = 17, 
+		dim_min = 1, dim_max = 9999, threads=1, verbose = True):
+
+		if sum( [0 if op in ["+","-","*","/"] else 0 for op in operators ] ) > 0:
+			print( "[Warning] Some of the following operators may not be supported:", operators)
+		self.operators = operators
+		self.max_depth = max_depth
+		self.population_size = population_size
+		self.max_generation = max_generation
+		self.tournament_size = tournament_size
+		self.elitism_size = elitism_size
+		self.limit_depth = limit_depth
+		self.dim_min = max(1, dim_min)
+		self.dim_max = max(1, dim_max)
+		self.threads = max(1, threads)
+		self.verbose = verbose
 		pass
 
 	def __str__(self):
@@ -33,31 +61,26 @@ class M3GP:
 		return str(self.getBestIndividual())
 		
 
-	def fit(self,Tr_X, Tr_Y, Te_X = None, Te_Y = None, operators=["+","-","*","/"], 
-		max_depth = 6, population_size = 500, max_generation = 100, 
-		tournament_size = 5, elitism_size = 1, limit_depth = 17, dim_init = 1, 
-		dim_max = 9999, dim_evol = "evol", threads=1, verbose = True):
-		if verbose:
+	def fit(self,Tr_X, Tr_Y, Te_X = None, Te_Y = None):
+		if self.verbose:
 			print("Training a model with the following parameters: ", end="")
-			print("{Operators : "+str(operators)+"}, ", end="")
-			print("{Max Depth : "+str(max_depth)+"}, ", end="")
-			print("{Population Size : "+str(population_size)+"}, ", end="")
-			print("{Max Generation : "+str(max_generation)+"}, ", end="")
-			print("{Tournament Size : "+str(tournament_size)+"}, ", end="")
-			print("{Elitism Size : "+str(elitism_size)+"}, ", end="")
-			print("{Depth Limit : "+str(limit_depth)+"}, ", end="")
-			print("{Initial No. Dims: "+str(dim_init)+"}, ", end="")
-			print("{Maximum No. Dims: "+str(dim_max)+"}, ", end="")
-			print("{No. Dims evolution: "+str(dim_evol)+"}, ", end="")
-			print("{Threads : "+str(threads)+"}, ", end="")
+			print("{Operators : "+str(self.operators)+"}, ", end="")
+			print("{Max Depth : "+str(self.max_depth)+"}, ", end="")
+			print("{Population Size : "+str(self.population_size)+"}, ", end="")
+			print("{Max Generation : "+str(self.max_generation)+"}, ", end="")
+			print("{Tournament Size : "+str(self.tournament_size)+"}, ", end="")
+			print("{Elitism Size : "+str(self.elitism_size)+"}, ", end="")
+			print("{Depth Limit : "+str(self.limit_depth)+"}, ", end="")
+			print("{Initial No. Dims: "+str(self.dim_min)+"}, ", end="")
+			print("{Maximum No. Dims: "+str(self.dim_max)+"}, ", end="")
+			print("{Threads : "+str(self.threads)+"}, ", end="")
 
-		self.population = Population(Tr_X, Tr_Y, Te_X, Te_Y, operators,max_depth,
-			population_size,max_generation,tournament_size,elitism_size, limit_depth, 
-			dim_init, dim_max, dim_evol, threads, verbose)
+		self.population = Population(Tr_X, Tr_Y, Te_X, Te_Y, self.operators, self.max_depth,
+			self.population_size, self.max_generation, self.tournament_size, self.elitism_size, 
+			self.limit_depth, self.dim_min, self.dim_max, self.threads, self.verbose)
 		self.population.train()
 
-		if dim_evol != "fixes":
-			self.getBestIndividual().prun()
+		self.getBestIndividual().prun(min_dim = self.dim_min)
 
 
 	def predict(self, dataset):

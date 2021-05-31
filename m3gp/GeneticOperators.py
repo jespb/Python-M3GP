@@ -33,7 +33,7 @@ def getElite(population,n):
 	return population[:n]
 
 
-def getOffspring(population, tournament_size, dim_max, dim_evol):
+def getOffspring(population, tournament_size, dim_min, dim_max):
 	'''
 	Genetic Operator: Selects a genetic operator and returns a list with the 
 	offspring Individuals. The crossover GOs return two Individuals and the
@@ -47,7 +47,7 @@ def getOffspring(population, tournament_size, dim_max, dim_evol):
 	desc = None
 
 	availableXO = [0,1]
-	availableMT = [0] if dim_evol == "fixed" else [0,1,2] 
+	availableMT = [0,1,2] 
 
 	if isCross:
 		whichXO = availableXO[ randint(0,len(availableXO)-1 ) ]
@@ -62,7 +62,7 @@ def getOffspring(population, tournament_size, dim_max, dim_evol):
 		elif whichMut == 1:
 			desc = M3ADD(population, tournament_size, dim_max)
 		elif whichMut == 2:
-			desc = M3REM(population, tournament_size)
+			desc = M3REM(population, tournament_size, dim_min)
 	return desc
 
 
@@ -178,7 +178,7 @@ def M3ADD(population, tournament_size, dim_max):
 
 	return ret
 
-def M3REM(population, tournament_size):
+def M3REM(population, tournament_size, dim_min):
 	'''
 	Randomly selects one dimensions from a single individual; that dimensions is
 	removed; the new Individual is returned as the offspring.
@@ -189,7 +189,7 @@ def M3REM(population, tournament_size):
 	ind1 = tournament(population, tournament_size)
 	ret = []
 
-	if ind1.getNumberOfDimensions() > 1:
+	if ind1.getNumberOfDimensions() > dim_min:
 		d1 = ind1.getDimensions()
 		r1 = randint(0,len(d1)-1)
 		d1.pop(r1)

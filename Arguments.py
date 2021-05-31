@@ -46,14 +46,12 @@ VERBOSE = True
 # Number of CPU Threads to be used
 THREADS = 1
 
-# Initial number of dimensions
-DIM_INIT = 1
+# Minimum number of dimensions
+DIM_MIN = 1
 
 # An unreachable number of dimensions
 DIM_MAX = 9999 
 
-# Do you want the number of dimensions to change or be fixed?
-DIM_EVOL = ["evol", "fixed"] [0]
 
 
 DATASETS_DIR = "datasets/"
@@ -107,13 +105,11 @@ if "-s" in argv:
 if "-t" in argv:
 	THREADS = int(argv[argv.index("-t")+1])
 
-if "-di" in argv:
-	DIM_INIT = int(argv[argv.index("-di")+1])
+if "-dmin" in argv:
+	DIM_MIN = int(argv[argv.index("-dmin")+1])
 
-if "-dm" in argv:
-	DIM_MAX = int(argv[argv.index("-dm")+1])
+if "-dmax" in argv:
+	DIM_MAX = int(argv[argv.index("-dmax")+1])
 
-if "-de" in argv:
-	DIM_EVOL = argv[argv.index("-de")+1]
 
 

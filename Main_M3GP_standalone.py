@@ -52,10 +52,10 @@ def run(r,dataset):
 	Tr_X, Te_X, Tr_Y, Te_Y = openAndSplitDatasets(dataset,r)
 
 	# Train a model
-	m3gp = M3GP()
-	m3gp.fit(Tr_X, Tr_Y, Te_X, Te_Y, OPERATORS, MAX_DEPTH, 
-		POPULATION_SIZE, MAX_GENERATION, TOURNAMENT_SIZE, ELITISM_SIZE, 
-		LIMIT_DEPTH, DIM_INIT, DIM_MAX, DIM_EVOL, THREADS, VERBOSE)
+	print(DIM_MIN, DIM_MAX)
+	m3gp = M3GP(OPERATORS, MAX_DEPTH, POPULATION_SIZE, MAX_GENERATION, TOURNAMENT_SIZE, 
+		ELITISM_SIZE, LIMIT_DEPTH, DIM_MIN, DIM_MAX, THREADS, VERBOSE)
+	m3gp.fit(Tr_X, Tr_Y, Te_X, Te_Y)
 
 
 	# Obtain training results
@@ -142,9 +142,8 @@ def callm3gp():
 			file.write("\nTournament Size,"+str(TOURNAMENT_SIZE))
 			file.write("\nElitism Size,"+str(ELITISM_SIZE))
 			file.write("\nDepth Limit,"+str(LIMIT_DEPTH))
-			file.write("\nInitial Dimensions,"+str(DIM_INIT))
+			file.write("\nMinimum Dimensions,"+str(DIM_MIN))
 			file.write("\nMaximum Dimensions,"+str(DIM_MAX))
-			file.write("\nDimensions Evolution,"+str(DIM_EVOL))
 			file.write("\nThreads,"+str(THREADS))
 
 

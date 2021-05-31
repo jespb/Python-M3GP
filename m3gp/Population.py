@@ -39,13 +39,13 @@ class Population:
 
 	generationTimes = None
 
+	dim_min = None
 	dim_max = None
-	dim_evol = None
 
 
 	def __init__(self, Tr_x, Tr_y, Te_x, Te_y, operators, max_depth, population_size,
-		max_generation, tournament_size, elitism_size, limit_depth, dim_init, 
-		dim_max, dim_evol, threads, verbose):
+		max_generation, tournament_size, elitism_size, limit_depth, dim_min, 
+		dim_max, threads, verbose):
 
 		self.Tr_x = Tr_x
 		self.Tr_y = Tr_y
@@ -63,14 +63,14 @@ class Population:
 		self.threads = threads
 		self.verbose = verbose
 
+		self.dim_min = dim_min
 		self.dim_max = dim_max
-		self.dim_evol = dim_evol
 
 		self.population = []
 
 		while len(self.population) < self.population_size:
 			ind = Individual(self.operators, self.terminals, self.max_depth)
-			ind.create(n_dims = dim_init)
+			ind.create(n_dims = dim_min)
 			self.population.append(ind)
 
 		self.bestIndividual = self.population[0]
@@ -159,14 +159,13 @@ class Population:
 		# Update best individual
 		if self.population[0] > self.bestIndividual:
 			self.bestIndividual = self.population[0]
-			if self.dim_evol != "fixed":
-				self.bestIndividual.prun(simp=False)
+			self.bestIndividual.prun(min_dim = self.dim_min, simp=False)
 
 		# Generating Next Generation
 		newPopulation = []
 		newPopulation.extend(getElite(self.population, self.elitism_size))
 		while len(newPopulation) < self.population_size:
-			offspring = getOffspring(self.population, self.tournament_size, self.dim_max, self.dim_evol)
+			offspring = getOffspring(self.population, self.tournament_size, self.dim_min, self.dim_max)
 			offspring = discardDeep(offspring, self.max_depth)
 			newPopulation.extend(offspring)
 		self.population = newPopulation[:self.population_size]
