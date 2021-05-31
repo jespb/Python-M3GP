@@ -20,7 +20,7 @@ class M3GP:
 	population = None
 
 	operators = None
-	max_depth = None
+	max_initial_depth = None
 	population_size = None
 	max_generation = None
 	tournament_size = None
@@ -36,14 +36,14 @@ class M3GP:
 			raise ClassifierNotTrainedError("The classifier must be trained using the fit(Tr_X, Tr_Y) method before being used.")
 
 
-	def __init__(self, operators=["+","-","*","/"], max_depth = 6, population_size = 500, 
+	def __init__(self, operators=["+","-","*","/"], max_initial_depth = 6, population_size = 500, 
 		max_generation = 100, tournament_size = 5, elitism_size = 1, limit_depth = 17, 
 		dim_min = 1, dim_max = 9999, threads=1, verbose = True):
 
 		if sum( [0 if op in ["+","-","*","/"] else 0 for op in operators ] ) > 0:
 			print( "[Warning] Some of the following operators may not be supported:", operators)
 		self.operators = operators
-		self.max_depth = max_depth
+		self.max_initial_depth = max_initial_depth
 		self.population_size = population_size
 		self.max_generation = max_generation
 		self.tournament_size = tournament_size
@@ -65,7 +65,7 @@ class M3GP:
 		if self.verbose:
 			print("Training a model with the following parameters: ", end="")
 			print("{Operators : "+str(self.operators)+"}, ", end="")
-			print("{Max Depth : "+str(self.max_depth)+"}, ", end="")
+			print("{Max Initial Depth : "+str(self.max_initial_depth)+"}, ", end="")
 			print("{Population Size : "+str(self.population_size)+"}, ", end="")
 			print("{Max Generation : "+str(self.max_generation)+"}, ", end="")
 			print("{Tournament Size : "+str(self.tournament_size)+"}, ", end="")
@@ -75,7 +75,7 @@ class M3GP:
 			print("{Maximum No. Dims: "+str(self.dim_max)+"}, ", end="")
 			print("{Threads : "+str(self.threads)+"}, ", end="")
 
-		self.population = Population(Tr_X, Tr_Y, Te_X, Te_Y, self.operators, self.max_depth,
+		self.population = Population(Tr_X, Tr_Y, Te_X, Te_Y, self.operators, self.max_initial_depth,
 			self.population_size, self.max_generation, self.tournament_size, self.elitism_size, 
 			self.limit_depth, self.dim_min, self.dim_max, self.threads, self.verbose)
 		self.population.train()

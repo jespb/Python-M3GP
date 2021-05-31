@@ -52,7 +52,6 @@ def run(r,dataset):
 	Tr_X, Te_X, Tr_Y, Te_Y = openAndSplitDatasets(dataset,r)
 
 	# Train a model
-	print(DIM_MIN, DIM_MAX)
 	m3gp = M3GP(OPERATORS, MAX_DEPTH, POPULATION_SIZE, MAX_GENERATION, TOURNAMENT_SIZE, 
 		ELITISM_SIZE, LIMIT_DEPTH, DIM_MIN, DIM_MAX, THREADS, VERBOSE)
 	m3gp.fit(Tr_X, Tr_Y, Te_X, Te_Y)
@@ -99,7 +98,8 @@ def callm3gp():
 		pass
 
 	for dataset in DATASETS:
-		if not os.path.exists(OUTPUT_DIR+"m3gp_"+ dataset):
+		outputFilename = OUTPUT_DIR+"m3gp_"+ dataset
+		if not os.path.exists(outputFilename):
 			results = []
 
 			# Run the algorithm several times
@@ -107,7 +107,7 @@ def callm3gp():
 				results.append(run(r,dataset))
 
 			# Write output header
-			file = open(OUTPUT_DIR+"m3gp_"+ dataset , "w")
+			file = open(outputFilename , "w")
 			file.write("Attribute,Run,")
 			for i in range(MAX_GENERATION):
 				file.write(str(i)+",")
@@ -136,7 +136,7 @@ def callm3gp():
 			# Write some parameters
 			file.write("\n\nParameters")
 			file.write("\nOperators,"+str(OPERATORS))
-			file.write("\nMax Depth,"+str(MAX_DEPTH))
+			file.write("\nMax Initial Depth,"+str(MAX_DEPTH))
 			file.write("\nPopulation Size,"+str(POPULATION_SIZE))
 			file.write("\nMax Generation,"+str(MAX_GENERATION))
 			file.write("\nTournament Size,"+str(TOURNAMENT_SIZE))
@@ -149,7 +149,7 @@ def callm3gp():
 
 			file.close()
 		else:
-			print("Filename: " + OUTPUT_DIR+"m3gp_"+ dataset +" already exists.")
+			print("Filename: " + outputFilename +" already exists.")
 
 
 if __name__ == '__main__':
