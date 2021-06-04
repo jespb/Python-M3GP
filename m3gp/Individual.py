@@ -84,8 +84,6 @@ class Individual:
 
 			if self.model_name == "MahalanobisDistanceClassifier":
 				self.model = MahalanobisDistanceClassifier()
-			if self.model_name == "EuclideanDistanceClassifier":
-				self.model = RidgeClassifierCV()
 			
 
 			hyper_X = self.convert(Tr_x)
