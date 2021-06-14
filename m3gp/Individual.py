@@ -42,11 +42,11 @@ class Individual:
 		self.terminals = terminals
 		self.max_depth = max_depth
 
-	def create(self,n_dims=1):
+	def create(self,rng, n_dims=1):
 		self.dimensions = []
 		for i in range(n_dims):
 			n = Node()
-			n.create(self.operators, self.terminals, self.max_depth, full=True)
+			n.create(rng, self.operators, self.terminals, self.max_depth, full=True)
 			self.dimensions.append(n)
 		
 	def copy(self, dim):

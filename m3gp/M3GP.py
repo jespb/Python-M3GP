@@ -1,5 +1,7 @@
 from .Population import Population
 
+from random import Random
+
 # 
 # By using this file, you are agreeing to this product's EULA
 #
@@ -31,6 +33,8 @@ class M3GP:
 	threads = None
 	verbose = None
 
+	rng = None # random number generator
+
 	def checkIfTrained(self):
 		if self.population == None:
 			raise ClassifierNotTrainedError("The classifier must be trained using the fit(Tr_X, Tr_Y) method before being used.")
@@ -38,7 +42,7 @@ class M3GP:
 
 	def __init__(self, operators=["+","-","*","/"], max_initial_depth = 6, population_size = 500, 
 		max_generation = 100, tournament_size = 5, elitism_size = 1, limit_depth = 17, 
-		dim_min = 1, dim_max = 9999, threads=1, verbose = True):
+		dim_min = 1, dim_max = 9999, threads=1, random_state = 42, verbose = True):
 
 		if sum( [0 if op in ["+","-","*","/"] else 0 for op in operators ] ) > 0:
 			print( "[Warning] Some of the following operators may not be supported:", operators)
@@ -52,6 +56,10 @@ class M3GP:
 		self.dim_min = max(1, dim_min)
 		self.dim_max = max(1, dim_max)
 		self.threads = max(1, threads)
+
+		self.rng = Random(random_state)
+
+
 		self.verbose = verbose
 		pass
 
@@ -73,11 +81,11 @@ class M3GP:
 			print("{Depth Limit : "+str(self.limit_depth)+"}, ", end="")
 			print("{Initial No. Dims: "+str(self.dim_min)+"}, ", end="")
 			print("{Maximum No. Dims: "+str(self.dim_max)+"}, ", end="")
-			print("{Threads : "+str(self.threads)+"}, ", end="")
+			print("{Threads : "+str(self.threads)+"}")
 
 		self.population = Population(Tr_X, Tr_Y, Te_X, Te_Y, self.operators, self.max_initial_depth,
 			self.population_size, self.max_generation, self.tournament_size, self.elitism_size, 
-			self.limit_depth, self.dim_min, self.dim_max, self.threads, self.verbose)
+			self.limit_depth, self.dim_min, self.dim_max, self.threads, self.rng, self.verbose)
 		self.population.train()
 
 		self.getBestIndividual().prun(min_dim = self.dim_min)

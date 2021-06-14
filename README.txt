@@ -74,6 +74,10 @@ $ python Main_M3GP_standalone.py
 		- This flag expects an integer with the maximum number of dimensions in each individual;
 		- By default, this value is set to 9999
 
+	[-rs random state]
+		- This flag expects an integer with the seed to be used by the M3GP algorithm;
+		- By default, this value is set to 42
+
 
 	
 
@@ -97,6 +101,7 @@ Arguments for M3GP():
 	elitism_size			-> Elitism selection size (default: 1)
 	limit_depth			-> Maximum individual depth (default: 17)
 	threads 			-> Number of CPU threads to be used (default: 1)
+	random_state		-> Random state (default: 42)
 	dim_min				-> Minimum number of dimensions (default: 1)
 	dim_max				-> Maximum number of dimensions (default: 9999) #The algorithm will not reach this value
 

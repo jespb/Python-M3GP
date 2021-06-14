@@ -52,6 +52,8 @@ DIM_MIN = 1
 # An unreachable number of dimensions
 DIM_MAX = 9999 
 
+RANDOM_STATE = 42
+
 
 
 DATASETS_DIR = "datasets/"
@@ -111,5 +113,8 @@ if "-dmin" in argv:
 if "-dmax" in argv:
 	DIM_MAX = int(argv[argv.index("-dmax")+1])
 
+
+if "-rs" in argv:
+	RANDOM_STATE = int(argv[argv.index("-rs")+1])
 
 

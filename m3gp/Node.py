@@ -1,4 +1,3 @@
-from random import randint, random
 import numpy as np
 
 # 
@@ -19,15 +18,15 @@ class Node:
 		pass
 
 
-	def create(self, operators=None, terminals=None, depth=None,full=False):
-		if depth>1 and (random()<0.5 or full ==True ):
-			self.value = operators[randint(0,len(operators)-1)]
+	def create(self, rng, operators=None, terminals=None, depth=None,full=False):
+		if depth>1 and (rng.random()<0.5 or full ==True ):
+			self.value = operators[rng.randint(0,len(operators)-1)]
 			self.left = Node()
-			self.left.create(operators, terminals, depth-1)
+			self.left.create(rng, operators, terminals, depth-1)
 			self.right = Node()
-			self.right.create(operators, terminals, depth-1)
+			self.right.create(rng, operators, terminals, depth-1)
 		else:
-			self.value = terminals[randint(0,len(terminals)-1)] # Sem literais
+			self.value = terminals[rng.randint(0,len(terminals)-1)] # Sem literais
 
 
 	def copy(self, left=None,value=None,right=None):
@@ -63,20 +62,20 @@ class Node:
 			return 1 + max(self.left.getDepth(),self.right.getDepth())
 
 
-	def getRandomNode(self, value=None):
+	def getRandomNode(self, rng, value=None):
 		'''
 		Returns a random Node within this Node.
 		'''
 		if value == None:
-			value = randint(0,self.getSize()-1)
+			value = rng.randint(0,self.getSize()-1)
 		if value == 0:
 			return self
 
 		left_size = self.left.getSize()
 		if value <= left_size :
-			return self.left.getRandomNode(value-1)
+			return self.left.getRandomNode(rng, value-1)
 		else:
-			return self.right.getRandomNode(value-left_size-1)
+			return self.right.getRandomNode(rng, value-left_size-1)
 
 
 	def swap(self, other):
@@ -117,11 +116,7 @@ class Node:
 			try:
 				return np.array( sample[self.value] )#.astype("float64")
 			except:
-				try:
-					return np.array( [float(self.value)]*sample.shape[0] )
-				except:
-					print(self.value, sample)
-					return np.array( [float(self.value)]*sample.shape[0] )
+				return np.array( [float(self.value)]*sample.shape[0] )
 
 				
 		else:

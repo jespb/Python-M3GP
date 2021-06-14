@@ -53,7 +53,7 @@ def run(r,dataset):
 
 	# Train a model
 	m3gp = M3GP(OPERATORS, MAX_DEPTH, POPULATION_SIZE, MAX_GENERATION, TOURNAMENT_SIZE, 
-		ELITISM_SIZE, LIMIT_DEPTH, DIM_MIN, DIM_MAX, THREADS, VERBOSE)
+		ELITISM_SIZE, LIMIT_DEPTH, DIM_MIN, DIM_MAX, THREADS, RANDOM_STATE, VERBOSE)
 	m3gp.fit(Tr_X, Tr_Y, Te_X, Te_Y)
 
 
@@ -145,6 +145,7 @@ def callm3gp():
 			file.write("\nMinimum Dimensions,"+str(DIM_MIN))
 			file.write("\nMaximum Dimensions,"+str(DIM_MAX))
 			file.write("\nThreads,"+str(THREADS))
+			file.write("\nThreads,"+str(RANDOM_STATE))
 
 
 			file.close()
