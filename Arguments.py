@@ -11,7 +11,9 @@ from sys import argv
 
 # Operators to be used by the models
 # Only these operators are available. To add mode, edit m3gp.Node.calculate(self, sample)
-OPERATORS = ["+","-","*","/"]
+
+#OPERATORS = [("+",2),("-",2),("*",2),("/",2),("log",1), ("max", 3)] # Example
+OPERATORS = [("+",2),("-",2),("*",2),("/",2)] # Default
 
 # Initial Maximum depth
 MAX_DEPTH = 6
