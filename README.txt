@@ -14,7 +14,7 @@ This implementation of M3GP can be used in a stand-alone fashion using the follo
 $ python Main_M3GP_standalone.py
 	
 	[-d datasets] 
-		- This flag expects a set of csv dataset names separated by ";" (e.g., a.csv;b.csv)
+		- This flag expects a set of csv dataset names separated by ";" (e.g., "a.csv;b.csv")
 		- By default, the heart.csv dataset is used		
 
 	[-dsdir dir] 
@@ -42,7 +42,7 @@ $ python Main_M3GP_standalone.py
 	[-op operators]
 		- This flag excepts a set of operators separated by ";"
 		- Allowed operators: +;-;*;/
-		- By default, the used operators are the sum, subtraction, multiplication and protected division.		
+		- By default, the used operators are the sum, subtraction, multiplication and protected division: "+;-*;/"		
 
 	[-ps population_size]
 		- This flag expects an integer with the size of the population;
@@ -90,7 +90,7 @@ How to import this implementation to your project:
 How to use this implementation:
 	$ from m3gp.M3GP import M3GP
 	$ model = M3GP()
-	$ model.fit( training_x, training_y, test_x, test_y )
+	$ model.fit( training_x, training_y, test_x (optional), test_y (optional) )
 
 Arguments for M3GP():
 	operators			-> Operators used by the individual (default: ["+","-","*","/"] )
@@ -101,7 +101,7 @@ Arguments for M3GP():
 	elitism_size			-> Elitism selection size (default: 1)
 	limit_depth			-> Maximum individual depth (default: 17)
 	threads 			-> Number of CPU threads to be used (default: 1)
-	random_state		-> Random state (default: 42)
+	random_state			-> Random state (default: 42)
 	dim_min				-> Minimum number of dimensions (default: 1)
 	dim_max				-> Maximum number of dimensions (default: 9999) #The algorithm will not reach this value
 
@@ -113,9 +113,9 @@ Arguments for model.fit():
 
 
 Useful methods:
-	$ model = M3GP()			-> starts the model;
-	$ model.fit(X, Y)			-> fits the model to the dataset;
-	$ model.predict(dataset)    -> Returns a list with the prediction of the given dataset.
+	$ model = M3GP()		-> starts the model;
+	$ model.fit(X, Y)		-> fits the model to the dataset;
+	$ model.predict(dataset)	-> Returns a list with the prediction of the given dataset.
 
 
 
