@@ -230,7 +230,7 @@ class Individual:
 
 
 
-	def prun(self,min_dim=1,simp=True):
+	def prun(self,min_dim=1,simp=False):
 		'''
 		Remove the dimensions that degrade the fitness.
 		If simp==True, also simplifies each dimension.

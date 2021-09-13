@@ -181,70 +181,84 @@ class Node:
 		if semantics[0]== semantics[-1] and len(semantics)>1:
 			self.value = str(semantics[0])
 			self.branches = None
-		# [+, -, *, /]
+
+
+
+		if self.branches!=None and len(self.branches)==1: # [log2]
+			pass
+
+
 		
-		# +
-		if self.value == "+":
-			# 0 + X == X
-			if not self.isLeaf() and ( self.branches[0].isLeaf() and self.branches[0].value == "0.0" ):
-				self.redirect(self.branches[1])
+		if self.branches!=None and len(self.branches)==2: # [+, -, *, /]
+			# +
+			if self.value == "+":
+				# 0 + X == X
+				if not self.isLeaf() and ( self.branches[0].isLeaf() and self.branches[0].value == "0.0" ):
+					self.redirect(self.branches[1])
 
-			# X + 0 == X
-			if not self.isLeaf() and ( self.branches[1].isLeaf() and self.branches[1].value == "0.0" ):
-				self.redirect(self.branches[0])
+				# X + 0 == X
+				if not self.isLeaf() and ( self.branches[1].isLeaf() and self.branches[1].value == "0.0" ):
+					self.redirect(self.branches[0])
 
-			# X + X == 2 * X
-			if not self.isLeaf() and ( str(self.branches[1]) == str(self.branches[0]) ):
-				self.value = "*"
-				n = Node()
-				n.copy(value = "2.0")
-				self.branches[0].redirect( n )
+				# X + X == 2 * X
+				if not self.isLeaf() and ( str(self.branches[1]) == str(self.branches[0]) ):
+					self.value = "*"
+					n = Node()
+					n.copy(value = "2.0")
+					self.branches[0].redirect( n )
 
-		# - 
-		if self.value == "-":
-			# X - 0 == X
-			if not self.isLeaf() and ( self.branches[1].isLeaf() and self.branches[1].value == "0.0" ):
-				self.redirect(self.branches[0])
+			# - 
+			if self.value == "-":
+				# X - 0 == X
+				if not self.isLeaf() and ( self.branches[1].isLeaf() and self.branches[1].value == "0.0" ):
+					self.redirect(self.branches[0])
 
-			# X - X == 0
-			if not self.isLeaf() and ( str(self.branches[1]) == str(self.branches[0]) ):
-				n = Node()
-				n.copy(value = "0.0")
-				self.redirect( n )
+				# X - X == 0
+				if not self.isLeaf() and ( str(self.branches[1]) == str(self.branches[0]) ):
+					n = Node()
+					n.copy(value = "0.0")
+					self.redirect( n )
 
-		# * 
-		if self.value == "*":
-			# X * 0 == 0,  0 * X == 0
-			if not self.isLeaf() and ( (self.branches[0].isLeaf() and self.branches[0].value=="0.0") or (self.branches[1].isLeaf() and self.branches[1].value=="0.0") ):
-				n = Node()
-				n.copy(value = "0.0")
-				self.redirect( n )
+			# * 
+			if self.value == "*":
+				# X * 0 == 0,  0 * X == 0
+				if not self.isLeaf() and ( (self.branches[0].isLeaf() and self.branches[0].value=="0.0") or (self.branches[1].isLeaf() and self.branches[1].value=="0.0") ):
+					n = Node()
+					n.copy(value = "0.0")
+					self.redirect( n )
 
-			# 1 * X == X
-			if not self.isLeaf() and ( self.branches[0].isLeaf() and self.branches[0].value == "1.0" ):
-				self.redirect(self.branches[1])
+				# 1 * X == X
+				if not self.isLeaf() and ( self.branches[0].isLeaf() and self.branches[0].value == "1.0" ):
+					self.redirect(self.branches[1])
 
-			# X * 1 == X
-			if not self.isLeaf() and ( self.branches[1].isLeaf() and self.branches[1].value == "1.0" ):
-				self.redirect(self.branches[0])
+				# X * 1 == X
+				if not self.isLeaf() and ( self.branches[1].isLeaf() and self.branches[1].value == "1.0" ):
+					self.redirect(self.branches[0])
 
-		# //
-		if self.value == "/":
-			# X // 0 == 1
-			if not self.isLeaf() and ( self.branches[1].isLeaf() and self.branches[1].value=="0.0" ):
-				n = Node()
-				n.copy(value = "1.0")
-				self.redirect( n )
+			# //
+			if self.value == "/":
+				# X // 0 == 1
+				if not self.isLeaf() and ( self.branches[1].isLeaf() and self.branches[1].value=="0.0" ):
+					n = Node()
+					n.copy(value = "1.0")
+					self.redirect( n )
 
-			# X // 1 == X
-			if not self.isLeaf() and ( self.branches[1].isLeaf() and self.branches[1].value=="1.0" ):
-				self.redirect(self.branches[0])
+				# X // 1 == X
+				if not self.isLeaf() and ( self.branches[1].isLeaf() and self.branches[1].value=="1.0" ):
+					self.redirect(self.branches[0])
 
-			# X // X == 1
-			if not self.isLeaf() and ( str(self.branches[1]) == str(self.branches[0]) ):
-				n = Node()
-				n.copy(value = "1.0")
-				self.redirect( n )
+				# X // X == 1
+				if not self.isLeaf() and ( str(self.branches[1]) == str(self.branches[0]) ):
+					n = Node()
+					n.copy(value = "1.0")
+					self.redirect( n )
+
+
+		if self.branches!=None and len(self.branches)==3: # [max]
+			pass
+
+
+
 
 		if self.branches != None:
 			for branch in self.branches:

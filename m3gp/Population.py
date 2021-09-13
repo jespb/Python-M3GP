@@ -162,7 +162,7 @@ class Population:
 		# Update best individual
 		if self.population[0] > self.bestIndividual:
 			self.bestIndividual = self.population[0]
-			self.bestIndividual.prun(min_dim = self.dim_min, simp=False)
+			self.bestIndividual.prun(min_dim = self.dim_min)
 
 		# Generating Next Generation
 		newPopulation = []

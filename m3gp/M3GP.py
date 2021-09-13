@@ -88,7 +88,7 @@ class M3GP:
 			self.limit_depth, self.dim_min, self.dim_max, self.threads, self.rng, self.verbose)
 		self.population.train()
 
-		self.getBestIndividual().prun(min_dim = self.dim_min)
+		self.getBestIndividual().prun(min_dim = self.dim_min, simp=True)
 
 
 	def predict(self, dataset):
