@@ -145,7 +145,7 @@ def callm3gp():
 			file.write("\nMinimum Dimensions,"+str(DIM_MIN))
 			file.write("\nMaximum Dimensions,"+str(DIM_MAX))
 			file.write("\nThreads,"+str(THREADS))
-			file.write("\nRandom State,"+str(list(range(RUNS))
+			file.write("\nRandom State,"+str(list(range(RUNS))))
 
 
 			file.close()
