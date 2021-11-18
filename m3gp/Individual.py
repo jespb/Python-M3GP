@@ -35,7 +35,7 @@ class Individual:
 	model_name = ["MahalanobisDistanceClassifier"][0]
 	model = None
 
-	fitnessType = ["Accuracy", "WAF", "2FOLD"][2]
+	fitnessType = ["Accuracy", "WAF", "2FOLD"][0]
 
 	def __init__(self, operators, terminals, max_depth):
 		self.operators = operators
