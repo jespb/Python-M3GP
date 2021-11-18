@@ -35,7 +35,7 @@ class Individual:
 	model_name = ["MahalanobisDistanceClassifier"][0]
 	model = None
 
-	fitnessType = ["Accuracy", "WAF"][0]
+	fitnessType = ["Accuracy", "WAF", "2FOLD"][2]
 
 	def __init__(self, operators, terminals, max_depth):
 		self.operators = operators
@@ -74,6 +74,10 @@ class Individual:
 		return ",".join([str(d) for d in self.dimensions])
 
 
+	def createModel(self):
+		if self.model_name == "MahalanobisDistanceClassifier":
+			return MahalanobisDistanceClassifier()
+
 	def fit(self, Tr_x, Tr_y):
 		'''
 		Trains the classifier which will be used in the fitness function
@@ -82,10 +86,8 @@ class Individual:
 			self.training_X = Tr_x
 			self.training_Y = Tr_y
 
-			if self.model_name == "MahalanobisDistanceClassifier":
-				self.model = MahalanobisDistanceClassifier()
-			
-
+			self.model = self.createModel()
+	
 			hyper_X = self.convert(Tr_x)
 
 			self.model.fit(hyper_X,Tr_y)
@@ -125,20 +127,48 @@ class Individual:
 
 
 
-	def getFitness(self):
+	def getFitness(self, tr_x = None, tr_y = None):
 		'''
 		Returns the individual's fitness.
 		'''
 		if self.fitness is None:
-			self.getTrainingPredictions()
+			if not tr_x is None:
+				self.training_X = tr_x
+			if not tr_y is None:
+				self.training_Y = tr_y
+
 
 			if self.fitnessType == "Accuracy":
+				self.fit(self.training_X, self.training_Y)
+				self.getTrainingPredictions()
 				acc = accuracy_score(self.trainingPredictions, self.training_Y)
 				self.fitness = acc 
 
 			if self.fitnessType == "WAF":
+				self.fit(self.training_X, self.training_Y)
+				self.getTrainingPredictions()
 				waf = f1_score(self.trainingPredictions, self.training_Y, average="weighted")
 				self.fitness = waf 
+
+			if self.fitnessType == "2FOLD":
+				hyper_X = self.convert(self.training_X)
+
+				X1 = hyper_X.iloc[:len(hyper_X)//2]
+				Y1 = self.training_Y[:len(self.training_Y)//2]
+				X2 = hyper_X.iloc[len(hyper_X)//2:]
+				Y2 = self.training_Y[len(self.training_Y)//2:]
+
+				M1 = self.createModel()
+				M1.fit(X1,Y1)
+				P1 = M1.predict(X2)
+
+				M2 = self.createModel()
+				M2.fit(X2,Y2)
+				P2 = M2.predict(X1)
+
+				f1 = accuracy_score(P1, Y2)
+				f2 = accuracy_score(P2, Y1)
+				self.fitness = (f1+f2)/2
 
 		return self.fitness
 
@@ -222,7 +252,6 @@ class Individual:
 		'''
 		Returns the class prediction of a sample.
 		'''
-			
 		hyper_X = self.convert(X)
 		predictions = self.model.predict(hyper_X)
 
@@ -240,6 +269,7 @@ class Individual:
 		i = 0
 		ind = Individual(self.operators, self.terminals, self.max_depth)
 		ind.copy(dup)
+
 		ind.fit(self.training_X, self.training_Y)
 
 		while i < len(dup) and len(dup) > min_dim:

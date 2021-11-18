@@ -145,10 +145,9 @@ class Population:
 		# Calculates the accuracy of the population using multiprocessing
 		if self.threads > 1:
 			with mp.Pool(processes= self.threads) as pool:
-				model = pool.map(fitIndividuals, [(ind, self.Tr_x, self.Tr_y) for ind in self.population] )
+				fitnesses = pool.map(fitIndividuals, [(ind, self.Tr_x, self.Tr_y) for ind in self.population] )
 				for i in range(len(self.population)):
-					self.population[i].model = model[i][0]
-					self.population[i].trainingPredictions = model[i][1]
+					self.population[i].fitness = fitnesses[i]
 					self.population[i].training_X = self.Tr_x
 					self.population[i].training_Y = self.Tr_y
 		else:
@@ -221,14 +220,9 @@ class Population:
 		return self.generationTimes
 
 
-def calculateIndividualAccuracy_MultiProcessing(ind, fitArray, indIndex):
-	fitArray[indIndex] = ind.getTrainingAccuracy()
 
 def fitIndividuals(a):
 	ind,x,y = a
-	ind.fit(x,y)
 	
-	return ( ind.model, ind.predict(x) )
+	return ind.getFitness(x,y)
 
-def getTrainingPredictions(ind):
-	return ind.getTrainingPredictions()
