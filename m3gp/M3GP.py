@@ -40,11 +40,11 @@ class M3GP:
 			raise ClassifierNotTrainedError("The classifier must be trained using the fit(Tr_X, Tr_Y) method before being used.")
 
 
-	def __init__(self, operators=["+","-","*","/"], max_initial_depth = 6, population_size = 500, 
+	def __init__(self, operators=[("+",2),("-",2),("*",2),("/",2)], max_initial_depth = 6, population_size = 500, 
 		max_generation = 100, tournament_size = 5, elitism_size = 1, limit_depth = 17, 
 		dim_min = 1, dim_max = 9999, threads=1, random_state = 42, verbose = True):
 
-		if sum( [0 if op in ["+","-","*","/"] else 0 for op in operators ] ) > 0:
+		if sum( [0 if op in [("+",2),("-",2),("*",2),("/",2)] else 0 for op in operators ] ) > 0:
 			print( "[Warning] Some of the following operators may not be supported:", operators)
 		self.operators = operators
 		self.max_initial_depth = max_initial_depth

@@ -81,6 +81,9 @@ if "-runs" in argv:
 
 if "-op" in argv:
 	OPERATORS = argv[argv.index("-op")+1].split(";")
+	for i in range(len(OPERATORS)):
+		OPERATORS[i] = OPERATORS[i].split(",")
+		OPERATORS[i][1] = int(OPERATORS[i][1])
 
 if "-md" in argv:
 	MAX_DEPTH = int(argv[argv.index("-md")+1])

@@ -40,9 +40,9 @@ $ python Main_M3GP_standalone.py
 		- Use "-odir ./" for the root directory
 	
 	[-op operators]
-		- This flag excepts a set of operators separated by ";"
-		- Allowed operators: +;-;*;/
-		- By default, the used operators are the sum, subtraction, multiplication and protected division: "+;-*;/"		
+		- This flag excepts a set of operators and their number of arguments, separated by ";"
+		- Allowed operators: +,2 ; -,2 ; *,2 ; /,2
+		- By default, the used operators are the sum, subtraction, multiplication and protected division: "+,2;-,2;*,2;/,2"	
 
 	[-ps population_size]
 		- This flag expects an integer with the size of the population;
@@ -93,15 +93,15 @@ How to use this implementation:
 	$ model.fit( training_x, training_y, test_x (optional), test_y (optional) )
 
 Arguments for M3GP():
-	operators			-> Operators used by the individual (default: ["+","-","*","/"] )
+	operators			-> Operators used by the individual (default: [("+",2),("-",2),("*",2),("/",2)] )
 	max_depth			-> Max initial depths of the individuals (default: 6)
-	population_size			-> Population size (default: 500)
-	max_generation			-> Maximum number of generations (default: 100)
-	tournament_size			-> Tournament size (default: 5)
-	elitism_size			-> Elitism selection size (default: 1)
+	population_size		-> Population size (default: 500)
+	max_generation		-> Maximum number of generations (default: 100)
+	tournament_size		-> Tournament size (default: 5)
+	elitism_size		-> Elitism selection size (default: 1)
 	limit_depth			-> Maximum individual depth (default: 17)
 	threads 			-> Number of CPU threads to be used (default: 1)
-	random_state			-> Random state (default: 42)
+	random_state		-> Random state (default: 42)
 	dim_min				-> Minimum number of dimensions (default: 1)
 	dim_max				-> Maximum number of dimensions (default: 9999) #The algorithm will not reach this value
 
