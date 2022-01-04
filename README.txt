@@ -9,6 +9,8 @@ Copyright ©2019-2022 J. E. Batista
 This file contains information about the command and flags used in the stand-alone version of this implementation and an explanation on how to import, use and edit this implementation.
 
 
+
+
 This implementation of M3GP can be used in a stand-alone fashion using the following command and flags:
 
 $ python Main_M3GP_standalone.py
@@ -81,7 +83,6 @@ $ python Main_M3GP_standalone.py
 
 	
 
-
 How to import this implementation to your project:
     - Download this repository;
     - Copy the "m3gp/" directory to your project directory;
@@ -111,7 +112,6 @@ Arguments for model.fit():
     Te_X 		-> Test samples, used in the standalone version (default: None)
     Te_Y 		-> Test labels, used in the standalone version (default: None)
 
-
 Useful methods:
     $ model = M3GP()	-> starts the model;
     $ model.fit(X, Y)	-> fits the model to the dataset;
@@ -131,11 +131,9 @@ How to edit this implementation:
         - Assuming it is a scykit-learn implementation, you may only need to change one line in this method;
         - Warning: Since M3GP is a slow method, a learning algorithm that escalates well with the number of features is recommended.
 
+   
 
-Reference:
-    Muñoz, L., Trujillo, L., & Silva, S. (2015). M3GP – multiclass classification with GP. In Genetic Programming - 18th European Conference, EuroGP 2015, Proceedings (Vol. 9025, pp. 78-91). (Lecture Notes in Computer Science (including subseries Lecture Notes in Artificial Intelligence and Lecture Notes in Bioinformatics); Vol. 9025). Springer-Verlag. https://doi.org/10.1007/978-3-319-16501-1_7
-    
-    
+
 Citation: 
     If you use this implementation, please cite one of the works below, where the implementation is also used:
 
@@ -161,3 +159,8 @@ Citation:
         doi={10.1109/CEC48606.2020.9185630}
     }
 
+
+
+
+Reference:
+    Muñoz, L., Trujillo, L., & Silva, S. (2015). M3GP – multiclass classification with GP. In Genetic Programming - 18th European Conference, EuroGP 2015, Proceedings (Vol. 9025, pp. 78-91). (Lecture Notes in Computer Science (including subseries Lecture Notes in Artificial Intelligence and Lecture Notes in Bioinformatics); Vol. 9025). Springer-Verlag. https://doi.org/10.1007/978-3-319-16501-1_7
