@@ -1,11 +1,10 @@
+from sklearn.tree import DecisionTreeRegressor
 from .Node import Node
 from .MahalanobisDistanceClassifier import MahalanobisDistanceClassifier
 
 import pandas as pd
 
-from sklearn.metrics import accuracy_score
-from sklearn.metrics import f1_score
-from sklearn.metrics import cohen_kappa_score
+from sklearn.metrics import accuracy_score, f1_score, cohen_kappa_score, mean_squared_error
 
 
 # 
@@ -32,15 +31,14 @@ class Individual:
 	testPredictions = None
 	fitness = None
 
-	model_name = ["MahalanobisDistanceClassifier"][0]
 	model = None
 
-	fitnessType = ["Accuracy", "WAF", "2FOLD"][0]
-
-	def __init__(self, operators, terminals, max_depth):
+	def __init__(self, operators, terminals, max_depth, model_name="MahalanobisDistanceClassifier", fitnessType="Accuracy"):
 		self.operators = operators
 		self.terminals = terminals
 		self.max_depth = max_depth
+		self.model_name = model_name
+		self.fitnessType = fitnessType
 
 	def create(self,rng, n_dims=1):
 		self.dimensions = []
@@ -77,6 +75,8 @@ class Individual:
 	def createModel(self):
 		if self.model_name == "MahalanobisDistanceClassifier":
 			return MahalanobisDistanceClassifier()
+		elif self.model_name == "DecisionTreeRegressor":
+			return DecisionTreeRegressor(max_depth=10)
 
 	def fit(self, Tr_x, Tr_y):
 		'''
@@ -144,6 +144,12 @@ class Individual:
 				acc = accuracy_score(self.trainingPredictions, self.training_Y)
 				self.fitness = acc 
 
+			if self.fitnessType == "mse":
+				self.fit(self.training_X, self.training_Y)
+				self.getTrainingPredictions()
+				mse = -1 * mean_squared_error(self.trainingPredictions, self.training_Y)
+				self.fitness = mse 
+
 			if self.fitnessType == "WAF":
 				self.fit(self.training_X, self.training_Y)
 				self.getTrainingPredictions()
@@ -185,6 +191,20 @@ class Individual:
 
 		return self.testPredictions
 
+
+	
+	def getmse(self, X,Y,pred=None):
+		'''
+		Returns the individual's accuracy.
+		'''
+		if pred == "Tr":
+			pred = self.getTrainingPredictions()
+		elif pred == "Te":
+			pred = self.getTestPredictions(X)
+		else:
+			pred = self.predict(X)
+
+		return -1 * mean_squared_error(pred, Y)
 
 	
 	def getAccuracy(self, X,Y,pred=None):
@@ -267,7 +287,7 @@ class Individual:
 
 		dup = self.dimensions[:]
 		i = 0
-		ind = Individual(self.operators, self.terminals, self.max_depth)
+		ind = Individual(self.operators, self.terminals, self.max_depth, self.model_name, self.fitnessType)
 		ind.copy(dup)
 
 		ind.fit(self.training_X, self.training_Y)
@@ -275,7 +295,7 @@ class Individual:
 		while i < len(dup) and len(dup) > min_dim:
 			dup2 = dup[:]
 			dup2.pop(i)
-			ind2 = Individual(self.operators, self.terminals, self.max_depth)
+			ind2 = Individual(self.operators, self.terminals, self.max_depth, self.model_name, self.fitnessType)
 			ind2.copy(dup2)
 			ind2.fit(self.training_X, self.training_Y)
 

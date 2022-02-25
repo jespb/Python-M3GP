@@ -25,8 +25,8 @@ class Population:
 	terminals = None
 
 
-	population = None
-	bestIndividual = None
+	population: list[Individual] = None
+	bestIndividual: Individual = None
 	currentGeneration = 0
 
 	trainingAccuracyOverTime = None
@@ -46,7 +46,7 @@ class Population:
 
 	def __init__(self, Tr_x, Tr_y, Te_x, Te_y, operators, max_depth, population_size,
 		max_generation, tournament_size, elitism_size, limit_depth, dim_min, 
-		dim_max, threads, rng, verbose):
+		dim_max, threads, rng, verbose, model_name, fitnessType):
 
 		self.Tr_x = Tr_x
 		self.Tr_y = Tr_y
@@ -64,7 +64,8 @@ class Population:
 		self.threads = threads
 		self.rng = rng
 		self.verbose = verbose
-
+		self.model_name = model_name
+		self.fitnessType = fitnessType
 
 		self.dim_min = dim_min
 		self.dim_max = dim_max
@@ -72,7 +73,7 @@ class Population:
 		self.population = []
 
 		while len(self.population) < self.population_size:
-			ind = Individual(self.operators, self.terminals, self.max_depth)
+			ind = Individual(self.operators, self.terminals, self.max_depth, self.model_name, self.fitnessType)
 			ind.create(self.rng, n_dims = dim_min)
 			self.population.append(ind)
 
@@ -141,7 +142,14 @@ class Population:
 		the elite is selected; and the offspring are created.
 		'''
 		begin = time.time()
+		if self.fitnessType == "Accuracy":
+			scoring_Tr,scoring_Te = lambda x: x.getAccuracy(self.Tr_x, self.Tr_y, pred="Tr"), lambda x: x.getAccuracy(self.Tr_x, self.Tr_y, pred="Te")
+		elif self.fitnessType == "mse":
+			scoring_Tr,scoring_Te = lambda x: x.getFitness(), lambda x: x.getmse(self.Tr_x, self.Tr_y, pred="Te")
+		else:
+			scoring_Tr,scoring_Te = lambda x: x.getAccuracy(self.Tr_x, self.Tr_y, pred="Tr"), lambda x: x.getAccuracy(self.Tr_x, self.Tr_y, pred="Te")
 		
+
 		# Calculates the accuracy of the population using multiprocessing
 		if self.threads > 1:
 			with mp.Pool(processes= self.threads) as pool:
@@ -155,11 +163,11 @@ class Population:
 			[ ind.getFitness() for ind in self.population ]
 
 		# Sort the population from best to worse
-		self.population.sort(reverse=True)
+		self.population.sort(key=scoring_Tr, reverse=True)
 
 
 		# Update best individual
-		if self.population[0] > self.bestIndividual:
+		if scoring_Tr(self.population[0]) > scoring_Tr(self.bestIndividual):
 			self.bestIndividual = self.population[0]
 			self.bestIndividual.prun(min_dim = self.dim_min)
 
@@ -178,9 +186,9 @@ class Population:
 		# Debug
 		if self.verbose and self.currentGeneration%5==0:
 			if not self.Te_x is None:
-				print("   > Gen #"+str(self.currentGeneration)+":  Tr-Acc: "+ "%.6f" %self.bestIndividual.getAccuracy(self.Tr_x, self.Tr_y, pred="Tr")+" // Te-Acc: "+ "%.6f" %self.bestIndividual.getAccuracy(self.Te_x, self.Te_y, pred="Te") + " // Time: " + str(end- begin) )
+				print("   > Gen #"+str(self.currentGeneration)+":  Tr-Score: "+ "%.6f" %scoring_Tr(self.bestIndividual)+" // Te-Score: "+ "%.6f" %scoring_Te(self.bestIndividual) + " // Time: " + str(end- begin) )
 			else:
-				print("   > Gen #"+str(self.currentGeneration)+":  Tr-Acc: "+ "%.6f" %self.bestIndividual.getAccuracy(self.Tr_x, self.Tr_y, pred="Tr"))
+				print("   > Gen #"+str(self.currentGeneration)+":  Tr-Score: "+ "%.6f" %scoring_Tr(self.bestIndividual))
 
 
 	def predict(self, sample):
