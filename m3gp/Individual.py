@@ -76,7 +76,7 @@ class Individual:
 		if self.model_name == "MahalanobisDistanceClassifier":
 			return MahalanobisDistanceClassifier()
 		elif self.model_name == "DecisionTreeRegressor":
-			return DecisionTreeRegressor(max_depth=10)
+			return DecisionTreeRegressor(max_depth=15)
 
 	def fit(self, Tr_x, Tr_y):
 		'''
