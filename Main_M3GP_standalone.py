@@ -61,6 +61,7 @@ def run(r,dataset):
 	accuracy  = m3gp.getAccuracyOverTime()
 	waf       = m3gp.getWaFOverTime()
 	kappa     = m3gp.getKappaOverTime()
+	mse       = m3gp.getMSEOverTime()
 	sizes     = m3gp.getSizesOverTime()
 	model_str = str(m3gp.getBestIndividual())
 	times     = m3gp.getGenerationTimes()
@@ -71,6 +72,8 @@ def run(r,dataset):
 	te_waf     = waf[1]
 	tr_kappa   = kappa[0]
 	te_kappa   = kappa[1]
+	tr_mse     = mse[0]
+	te_mse     = mse[1]
 	size       = sizes[0]
 	dimensions = sizes[1]
 
@@ -86,6 +89,7 @@ def run(r,dataset):
 	return (tr_acc,te_acc,
 			tr_waf,te_waf,
 			tr_kappa,te_kappa,
+			tr_mse,te_mse,
 			size,dimensions,
 			times,
 			model_str)
@@ -116,6 +120,7 @@ def callm3gp():
 			attributes= ["Training-Accuracy","Test-Accuracy",
 						 "Training-WaF", "Test-WaF",
 						 "Training-Kappa", "Test-Kappa",
+						 "Training-MSE", "Test-MSE",
 						 "Size","Dimensions",
 						 "Time",	
 						 "Final_Model"]
