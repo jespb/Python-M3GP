@@ -132,6 +132,14 @@ class M3GP:
 
 		return [self.population.getTrainingKappaOverTime(), self.population.getTestKappaOverTime()]
 
+	def getMSEOverTime(self):
+		'''
+		Returns the training and test mean squared error values of the best model in each generation.
+		'''
+		self.checkIfTrained()
+
+		return [self.population.getTrainingMSEOverTime(), self.population.getTestMSEOverTime()]
+
 	def getSizesOverTime(self):
 		'''
 		Returns the size and number of dimensions of the best model in each generation.

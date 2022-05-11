@@ -144,7 +144,7 @@ class Individual:
 				acc = accuracy_score(self.trainingPredictions, self.training_Y)
 				self.fitness = acc 
 
-			if self.fitnessType == "mse":
+			if self.fitnessType == "MSE":
 				self.fit(self.training_X, self.training_Y)
 				self.getTrainingPredictions()
 				mse = -1 * mean_squared_error(self.trainingPredictions, self.training_Y)
@@ -179,6 +179,35 @@ class Individual:
 		return self.fitness
 
 
+	def getTrainingMeasure(self):
+		if self.fitnessType in ["Accuracy", "2FOLD"]:
+			self.getTrainingPredictions()
+			return accuracy_score(self.trainingPredictions, self.training_Y)
+			
+		if self.fitnessType == "MSE":
+			self.getTrainingPredictions()
+			return -1 * mean_squared_error(self.trainingPredictions, self.training_Y)
+
+		if self.fitnessType == "WAF":
+			self.getTrainingPredictions()
+			return f1_score(self.trainingPredictions, self.training_Y, average="weighted")
+
+
+	def getTestMeasure(self, test_X, test_Y):
+		if self.fitnessType in ["Accuracy", "2FOLD"]:
+			self.getTestPredictions(test_X)
+			return accuracy_score(self.testPredictions, test_Y)
+			
+		if self.fitnessType == "MSE":
+			self.getTestPredictions(test_X)
+			return -1 * mean_squared_error(self.testPredictions, test_Y)
+
+		if self.fitnessType == "WAF":
+			self.getTestPredictions(test_X)
+			return f1_score(self.testPredictions, test_Y, average="weighted")
+
+
+
 	def getTrainingPredictions(self):
 		if self.trainingPredictions is None:
 			self.trainingPredictions = self.predict(self.training_X)
@@ -193,7 +222,7 @@ class Individual:
 
 
 	
-	def getmse(self, X,Y,pred=None):
+	def getMSE(self, X,Y,pred=None):
 		'''
 		Returns the individual's accuracy.
 		'''

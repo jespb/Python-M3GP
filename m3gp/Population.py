@@ -25,9 +25,11 @@ class Population:
 	terminals = None
 
 
-	population: list[Individual] = None
+	population = None
 	bestIndividual: Individual = None
 	currentGeneration = 0
+
+	fitnessType = None
 
 	trainingAccuracyOverTime = None
 	testAccuracyOverTime = None
@@ -35,6 +37,8 @@ class Population:
 	testWaFOverTime = None
 	trainingKappaOverTime = None
 	testKappaOverTime = None
+	trainingMSEOverTime = None
+	testMSEOverTime = None
 	sizeOverTime = None
 	dimensionsOverTime = None
 
@@ -88,6 +92,8 @@ class Population:
 			self.testWaFOverTime = []
 			self.trainingKappaOverTime = []
 			self.testKappaOverTime = []
+			self.trainingMSEOverTime = []
+			self.testMSEOverTime = []
 			self.sizeOverTime = []
 			self.dimensionsOverTime = []
 			self.generationTimes = []
@@ -121,12 +127,24 @@ class Population:
 			self.currentGeneration += 1
 			
 			if not self.Te_x is None:
-				self.trainingAccuracyOverTime.append(self.bestIndividual.getAccuracy(self.Tr_x, self.Tr_y, pred="Tr"))
-				self.testAccuracyOverTime.append(self.bestIndividual.getAccuracy(self.Te_x, self.Te_y, pred="Te"))
-				self.trainingWaFOverTime.append(self.bestIndividual.getWaF(self.Tr_x, self.Tr_y, pred="Tr"))
-				self.testWaFOverTime.append(self.bestIndividual.getWaF(self.Te_x, self.Te_y, pred="Te"))
-				self.trainingKappaOverTime.append(self.bestIndividual.getKappa(self.Tr_x, self.Tr_y, pred="Tr"))
-				self.testKappaOverTime.append(self.bestIndividual.getKappa(self.Te_x, self.Te_y, pred="Te"))
+				if self.fitnessType in ["Accuracy", "2FOLD", "WAF"]:
+					self.trainingAccuracyOverTime.append(self.bestIndividual.getAccuracy(self.Tr_x, self.Tr_y, pred="Tr"))
+					self.testAccuracyOverTime.append(self.bestIndividual.getAccuracy(self.Te_x, self.Te_y, pred="Te"))
+					self.trainingWaFOverTime.append(self.bestIndividual.getWaF(self.Tr_x, self.Tr_y, pred="Tr"))
+					self.testWaFOverTime.append(self.bestIndividual.getWaF(self.Te_x, self.Te_y, pred="Te"))
+					self.trainingKappaOverTime.append(self.bestIndividual.getKappa(self.Tr_x, self.Tr_y, pred="Tr"))
+					self.testKappaOverTime.append(self.bestIndividual.getKappa(self.Te_x, self.Te_y, pred="Te"))
+					self.trainingMSEOverTime.append(0)
+					self.testMSEOverTime.append(0)
+				elif self.fitnessType in ["MSE"]:
+					self.trainingAccuracyOverTime.append(0)
+					self.testAccuracyOverTime.append(0)
+					self.trainingWaFOverTime.append(0)
+					self.testWaFOverTime.append(0)
+					self.trainingKappaOverTime.append(0)
+					self.testKappaOverTime.append(0)
+					self.trainingMSEOverTime.append(self.bestIndividual.getMSE(self.Tr_x, self.Tr_y, pred="Tr"))
+					self.testMSEOverTime.append(self.bestIndividual.getMSE(self.Te_x, self.Te_y, pred="Te"))
 				self.sizeOverTime.append(self.bestIndividual.getSize())
 				self.dimensionsOverTime.append(self.bestIndividual.getNumberOfDimensions())
 				self.generationTimes.append(duration)
@@ -142,20 +160,13 @@ class Population:
 		the elite is selected; and the offspring are created.
 		'''
 		begin = time.time()
-		if self.fitnessType == "Accuracy":
-			scoring_Tr,scoring_Te = lambda x: x.getAccuracy(self.Tr_x, self.Tr_y, pred="Tr"), lambda x: x.getAccuracy(self.Tr_x, self.Tr_y, pred="Te")
-		elif self.fitnessType == "mse":
-			scoring_Tr,scoring_Te = lambda x: x.getFitness(), lambda x: x.getmse(self.Tr_x, self.Tr_y, pred="Te")
-		else:
-			scoring_Tr,scoring_Te = lambda x: x.getAccuracy(self.Tr_x, self.Tr_y, pred="Tr"), lambda x: x.getAccuracy(self.Tr_x, self.Tr_y, pred="Te")
-		
 
 		# Calculates the accuracy of the population using multiprocessing
 		if self.threads > 1:
 			with mp.Pool(processes= self.threads) as pool:
-				fitnesses = pool.map(fitIndividuals, [(ind, self.Tr_x, self.Tr_y) for ind in self.population] )
+				results = pool.map(fitIndividuals, [(ind, self.Tr_x, self.Tr_y) for ind in self.population] )
 				for i in range(len(self.population)):
-					self.population[i].fitness = fitnesses[i]
+					self.population[i].trainingPredictions = results[i]
 					self.population[i].training_X = self.Tr_x
 					self.population[i].training_Y = self.Tr_y
 		else:
@@ -163,11 +174,11 @@ class Population:
 			[ ind.getFitness() for ind in self.population ]
 
 		# Sort the population from best to worse
-		self.population.sort(key=scoring_Tr, reverse=True)
+		self.population.sort(reverse=True)
 
 
 		# Update best individual
-		if scoring_Tr(self.population[0]) > scoring_Tr(self.bestIndividual):
+		if self.population[0] > self.bestIndividual:
 			self.bestIndividual = self.population[0]
 			self.bestIndividual.prun(min_dim = self.dim_min)
 
@@ -183,12 +194,13 @@ class Population:
 
 		end = time.time()
 
+
 		# Debug
 		if self.verbose and self.currentGeneration%5==0:
 			if not self.Te_x is None:
-				print("   > Gen #"+str(self.currentGeneration)+":  Tr-Score: "+ "%.6f" %scoring_Tr(self.bestIndividual)+" // Te-Score: "+ "%.6f" %scoring_Te(self.bestIndividual) + " // Time: " + str(end- begin) )
+				print("   > Gen #%2d:  Tr-Score: %.6f // Te-Score: %.6f  // Time: %s" % (self.currentGeneration, self.bestIndividual.getTrainingMeasure(), self.bestIndividual.getTestMeasure(self.Te_x, self.Te_y), str(end- begin) )  )
 			else:
-				print("   > Gen #"+str(self.currentGeneration)+":  Tr-Score: "+ "%.6f" %scoring_Tr(self.bestIndividual))
+				print("   > Gen #%2d:  Tr-Score: %.6f // Time: %s" % (self.currentGeneration, self.bestIndividual.getTrainingMeasure(), str(end- begin) )  )
 
 
 	def predict(self, sample):
@@ -218,6 +230,12 @@ class Population:
 	def getTestKappaOverTime(self):
 		return self.testKappaOverTime
 
+	def getTrainingMSEOverTime(self):
+		return self.trainingMSEOverTime
+
+	def getTestMSEOverTime(self):
+		return self.testMSEOverTime
+
 	def getSizeOverTime(self):
 		return self.sizeOverTime
 
@@ -231,6 +249,7 @@ class Population:
 
 def fitIndividuals(a):
 	ind,x,y = a
+	ind.getFitness(x,y)
 	
-	return ind.getFitness(x,y)
+	return ind.getTrainingPredictions()
 
