@@ -3,7 +3,7 @@ name = "M3GP"
 version = "0.0.1"
 description = "Python implementation of M3GP"
 authors = [
-    "João Batista <jebatista@ciencias.ulisboa.pt>"
+    { name = "João Batista", email = "jebatista@ciencias.ulisboa.pt" }
 ]
 readme = "README.md"
 python = "^3.8"
