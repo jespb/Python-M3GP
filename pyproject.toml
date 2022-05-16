@@ -3,14 +3,18 @@ name = "M3GP"
 version = "0.0.1"
 description = "Python implementation of M3GP"
 authors = [
-    "João Batista <jebatista@ciencias.ulisboa.pt>"
+    { name = "João Batista", email = "jebatista@ciencias.ulisboa.pt" }
 ]
-license = "MIT"
 readme = "README.md"
-python = "^3.8"
+requires-python = "~=3.8"
+
+[project.urls]
 homepage = "https://github.com/jespb/Python-M3GP"
 repository = "https://github.com/jespb/Python-M3GP"
 documentation = "https://github.com/jespb/Python-M3GP"
+
+[project.license]
+text = "https://opensource.org/licenses/MIT"
 
 [build-system]
 build-backend = 'setuptools.build_meta'
