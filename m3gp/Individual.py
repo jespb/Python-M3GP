@@ -77,7 +77,7 @@ class Individual:
 		if self.model_name == "MahalanobisDistanceClassifier":
 			return MahalanobisDistanceClassifier()
 		elif self.model_name == "RandomForestClassifier":
-			return DecisionT(random_state = 42, max_depth=6)
+			return RandomForestClassifier(random_state = 42, max_depth=6)
 		elif self.model_name == "DecisionTreeRegressor":
 			return DecisionTreeRegressor(random_state = 42, max_depth=6)
 

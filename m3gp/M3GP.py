@@ -331,9 +331,9 @@ class M3GP:
 		# Debug
 		if self.verbose and self.currentGeneration%5==0:
 			if not self.Te_x is None:
-				print("   > Gen #%2d:  Tr-Score: %.6f // Te-Score: %.6f  // Time: %s" % (self.currentGeneration, self.bestIndividual.getTrainingMeasure(), self.bestIndividual.getTestMeasure(self.Te_x, self.Te_y), str(end- begin) )  )
+				print("   > Gen #%2d:  Fitness: %.6f // Tr-Score: %.6f // Te-Score: %.6f  // Time: %.4f" % (self.currentGeneration, self.bestIndividual.getFitness(), self.bestIndividual.getTrainingMeasure(), self.bestIndividual.getTestMeasure(self.Te_x, self.Te_y), end- begin )  )
 			else:
-				print("   > Gen #%2d:  Tr-Score: %.6f // Time: %s" % (self.currentGeneration, self.bestIndividual.getTrainingMeasure(), str(end- begin) )  )
+				print("   > Gen #%2d:  Fitness: %.6f // Tr-Score: %.6f // Time: %.4f" % (self.currentGeneration, self.bestIndividual.getFitness(),  self.bestIndividual.getTrainingMeasure(), end- begin )  )
 
 
 
