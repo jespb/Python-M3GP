@@ -1,6 +1,7 @@
 from sklearn.tree import DecisionTreeRegressor
 from .Node import Node
 from .MahalanobisDistanceClassifier import MahalanobisDistanceClassifier
+from sklearn.ensemble import RandomForestClassifier
 
 import pandas as pd
 
@@ -75,8 +76,10 @@ class Individual:
 	def createModel(self):
 		if self.model_name == "MahalanobisDistanceClassifier":
 			return MahalanobisDistanceClassifier()
+		elif self.model_name == "RandomForestClassifier":
+			return DecisionT(random_state = 42, max_depth=6)
 		elif self.model_name == "DecisionTreeRegressor":
-			return DecisionTreeRegressor(random_state = 42, max_depth=5)
+			return DecisionTreeRegressor(random_state = 42, max_depth=6)
 
 	def fit(self, Tr_x, Tr_y):
 		'''

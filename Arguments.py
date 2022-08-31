@@ -58,7 +58,7 @@ DIM_MAX = 9999
 RANDOM_STATE = 42
 
 # Models wrapped by the M3GP models
-MODEL_NAME = ["MahalanobisDistanceClassifier", "DecisionTreeRegressor"][0]
+MODEL_NAME = ["MahalanobisDistanceClassifier", "RandomForestClassifier", "DecisionTreeRegressor"][0]
 
 # Fitness used by the M3GP models
 FITNESS_TYPE = ["Accuracy", "MSE", "WAF", "2FOLD"][0]
