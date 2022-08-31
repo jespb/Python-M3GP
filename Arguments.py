@@ -5,7 +5,7 @@ from sys import argv
 #
 # This product can be obtained in https://github.com/jespb/Python-M3GP
 #
-# Copyright ©2019-2021 J. E. Batista
+# Copyright ©2019-2022 J. E. Batista
 #
 
 
@@ -54,7 +54,14 @@ DIM_MIN = 1
 # An unreachable number of dimensions
 DIM_MAX = 9999 
 
+# Random state
 RANDOM_STATE = 42
+
+# Models wrapped by the M3GP models
+MODEL_NAME = ["MahalanobisDistanceClassifier", "DecisionTreeRegressor"][0]
+
+# Fitness used by the M3GP models
+FITNESS_TYPE = ["Accuracy", "MSE", "WAF", "2FOLD"][0]
 
 
 

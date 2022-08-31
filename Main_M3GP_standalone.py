@@ -21,7 +21,7 @@ warnings.filterwarnings("ignore", category=FutureWarning,
 #
 # This product can be obtained in https://github.com/jespb/Python-M3GP
 #
-# Copyright ©2019-2021 J. E. Batista
+# Copyright ©2019-2022 J. E. Batista
 #
 
 
@@ -46,14 +46,14 @@ def run(r,dataset):
 	if VERBOSE:
 		print("> Starting run:")
 		print("  > ID:", r)
-		print("  > Dataset:", dataset)
+		print("  > Dataset:            "+dataset)
 		print()
 
 	Tr_X, Te_X, Tr_Y, Te_Y = openAndSplitDatasets(dataset,r)
 
 	# Train a model
 	m3gp = M3GP(OPERATORS, MAX_DEPTH, POPULATION_SIZE, MAX_GENERATION, TOURNAMENT_SIZE, 
-		ELITISM_SIZE, LIMIT_DEPTH, DIM_MIN, DIM_MAX, THREADS, RANDOM_STATE, VERBOSE)
+		ELITISM_SIZE, LIMIT_DEPTH, DIM_MIN, DIM_MAX, THREADS, RANDOM_STATE, VERBOSE, MODEL_NAME, FITNESS_TYPE)
 	m3gp.fit(Tr_X, Tr_Y, Te_X, Te_Y)
 
 
@@ -149,8 +149,11 @@ def callm3gp():
 			file.write("\nDepth Limit,"+str(LIMIT_DEPTH))
 			file.write("\nMinimum Dimensions,"+str(DIM_MIN))
 			file.write("\nMaximum Dimensions,"+str(DIM_MAX))
+			file.write("\nWrapped Model,"+MODEL_NAME)
+			file.write("\nFitness Type,"+FITNESS_TYPE)
 			file.write("\nThreads,"+str(THREADS))
 			file.write("\nRandom State,"+str(list(range(RUNS))))
+			file.write("\nDataset,"+dataset)
 
 
 			file.close()

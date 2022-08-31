@@ -7,7 +7,7 @@ from random import Random
 #
 # This product can be obtained in https://github.com/jespb/Python-M3GP
 #
-# Copyright ©2019-2021 J. E. Batista
+# Copyright ©2019-2022 J. E. Batista
 #
 
 class ClassifierNotTrainedError(Exception):
@@ -33,6 +33,7 @@ class M3GP:
 	threads = None
 	verbose = None
 
+	random_state = 42
 	rng = None # random number generator
 
 	def checkIfTrained(self):
@@ -57,6 +58,7 @@ class M3GP:
 		self.dim_max = max(1, dim_max)
 		self.threads = max(1, threads)
 
+		self.random_state = random_state
 		self.rng = Random(random_state)
 		self.model_name = model_name
 		self.fitnessType = fitnessType
@@ -72,17 +74,22 @@ class M3GP:
 
 	def fit(self,Tr_X, Tr_Y, Te_X = None, Te_Y = None):
 		if self.verbose:
-			print("Training a model with the following parameters: ", end="")
-			print("{Operators : "+str(self.operators)+"}, ", end="")
-			print("{Max Initial Depth : "+str(self.max_initial_depth)+"}, ", end="")
-			print("{Population Size : "+str(self.population_size)+"}, ", end="")
-			print("{Max Generation : "+str(self.max_generation)+"}, ", end="")
-			print("{Tournament Size : "+str(self.tournament_size)+"}, ", end="")
-			print("{Elitism Size : "+str(self.elitism_size)+"}, ", end="")
-			print("{Depth Limit : "+str(self.limit_depth)+"}, ", end="")
-			print("{Initial No. Dims: "+str(self.dim_min)+"}, ", end="")
-			print("{Maximum No. Dims: "+str(self.dim_max)+"}, ", end="")
-			print("{Threads : "+str(self.threads)+"}")
+			print("  > Parameters")
+			print("    > Random State:       "+str(self.random_state))
+			print("    > Operators:          "+str(self.operators))
+			print("    > Population Size:    "+str(self.population_size))
+			print("    > Max Generation:     "+str(self.max_generation))
+			print("    > Tournament Size:    "+str(self.tournament_size))
+			print("    > Elitism Size:       "+str(self.elitism_size))
+			print("    > Max Initial Depth:  "+str(self.max_initial_depth))
+			print("    > Max Depth:          "+str(self.limit_depth))
+			print("    > Minimum Dimensions: "+str(self.dim_min))
+			print("    > Maximum Dimensions: "+str(self.dim_max))
+			print("    > Wrapped Model:      "+self.model_name)
+			print("    > Fitness Type:       "+self.fitnessType)
+			print("    > Threads:            "+str(self.threads))
+			print()
+
 
 		self.population = Population(Tr_X, Tr_Y, Te_X, Te_Y, self.operators, self.max_initial_depth,
 			self.population_size, self.max_generation, self.tournament_size, self.elitism_size, 

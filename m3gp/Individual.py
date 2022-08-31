@@ -12,7 +12,7 @@ from sklearn.metrics import accuracy_score, f1_score, cohen_kappa_score, mean_sq
 #
 # This product can be obtained in https://github.com/jespb/Python-M3GP
 #
-# Copyright ©2019-2021 J. E. Batista
+# Copyright ©2019-2022 J. E. Batista
 #
 
 class Individual:
@@ -76,7 +76,7 @@ class Individual:
 		if self.model_name == "MahalanobisDistanceClassifier":
 			return MahalanobisDistanceClassifier()
 		elif self.model_name == "DecisionTreeRegressor":
-			return DecisionTreeRegressor(max_depth=5)
+			return DecisionTreeRegressor(random_state = 42, max_depth=5)
 
 	def fit(self, Tr_x, Tr_y):
 		'''

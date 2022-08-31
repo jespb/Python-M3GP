@@ -8,7 +8,7 @@ import time
 #
 # This product can be obtained in https://github.com/jespb/Python-M3GP
 #
-# Copyright ©2019-2021 J. E. Batista
+# Copyright ©2019-2022 J. E. Batista
 #
 
 class Population:
@@ -166,7 +166,8 @@ class Population:
 			with mp.Pool(processes= self.threads) as pool:
 				results = pool.map(fitIndividuals, [(ind, self.Tr_x, self.Tr_y) for ind in self.population] )
 				for i in range(len(self.population)):
-					self.population[i].trainingPredictions = results[i]
+					self.population[i].trainingPredictions = results[i][0]
+					self.population[i].fitness = results[i][1]
 					self.population[i].training_X = self.Tr_x
 					self.population[i].training_Y = self.Tr_y
 		else:
@@ -250,6 +251,14 @@ class Population:
 def fitIndividuals(a):
 	ind,x,y = a
 	ind.getFitness(x,y)
+
+	ret = []
+	if "FOLD" in ind.fitnessType:
+		ret.append(None)
+	else:
+		ret.append(ind.getTrainingPredictions())
+	ret.append(ind.getFitness())
+
 	
-	return ind.getTrainingPredictions()
+	return ret 
 
