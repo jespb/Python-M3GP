@@ -137,6 +137,17 @@ How to edit this implementation:
 Citation: 
     If you use this implementation, please cite one of the works below, where the implementation is also used:
 
+    @inproceedings{Batista2022,
+  	doi = {10.1109/cec55065.2022.9870343},
+  	url = {https://doi.org/10.1109/cec55065.2022.9870343},
+  	year = {2022},
+  	month = jul,
+  	publisher = {{IEEE}},
+  	author = {Joao E. Batista and Sara Silva},
+  	title = {Comparative study of classifier performance using automatic feature construction by M3GP},
+  	booktitle = {2022 {IEEE} Congress on Evolutionary Computation ({CEC})}
+    }
+
     @Article{rs13091623,
         AUTHOR = {Batista, João E. and Cabral, Ana I. R. and Vasconcelos, Maria J. P. and Vanneschi, Leonardo and Silva, Sara},
         TITLE = {Improving Land Cover Classification Using Genetic Programming for Feature Construction},
