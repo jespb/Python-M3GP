@@ -338,6 +338,19 @@ class M3GP:
 
 
 
+
+
+	def predict(self, dataset):
+		'''
+		Returns the predictions for the samples in a dataset.
+		'''
+		self.checkIfTrained()
+
+		return self.getBestIndividual().predict(dataset)
+
+		return "Population Not Trained" if self.bestIndividual == None else self.bestIndividual.predict(sample)
+
+
 def fitIndividuals(a):
 	ind,x,y = a
 	ind.getFitness(x,y)
@@ -354,17 +367,6 @@ def fitIndividuals(a):
 
 
 
-
-
-	def predict(self, dataset):
-		'''
-		Returns the predictions for the samples in a dataset.
-		'''
-		self.checkIfTrained()
-
-		return self.population.getBestIndividual().predict(dataset)
-
-		return "Population Not Trained" if self.bestIndividual == None else self.bestIndividual.predict(sample)
 
 
 
