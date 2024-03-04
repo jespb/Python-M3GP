@@ -110,53 +110,53 @@ def callm3gp():
 			for r in range(RUNS):
 				results.append(run(r,dataset))
 
-			# Write output header
-			file = open(outputFilename , "w")
-			file.write("Attribute,Run,")
-			for i in range(MAX_GENERATION):
-				file.write(str(i)+",")
-			file.write("\n")
-		
-			attributes= ["Training-Accuracy","Test-Accuracy",
-						 "Training-WaF", "Test-WaF",
-						 "Training-Kappa", "Test-Kappa",
-						 "Training-MSE", "Test-MSE",
-						 "Size","Dimensions",
-						 "Time",	
-						 "Final_Model"]
+				# Write output header
+				file = open(outputFilename , "w")
+				file.write("Attribute,Run,")
+				for i in range(MAX_GENERATION):
+					file.write(str(i)+",")
+				file.write("\n")
+			
+				attributes= ["Training-Accuracy","Test-Accuracy",
+							 "Training-WaF", "Test-WaF",
+							 "Training-Kappa", "Test-Kappa",
+							 "Training-MSE", "Test-MSE",
+							 "Size","Dimensions",
+							 "Time",	
+							 "Final_Model"]
 
-			# Write attributes with value over time
-			for ai in range(len(attributes)-1):
-				for i in range(RUNS):	
-					file.write("\n"+attributes[ai]+","+str(i)+",")
-					file.write( ",".join([str(val) for val in results[i][ai]]))
+				# Write attributes with value over time
+				for ai in range(len(attributes)-1):
+					for i in range(len(results)):	
+						file.write("\n"+attributes[ai]+","+str(i)+",")
+						file.write( ",".join([str(val) for val in results[i][ai]]))
+					file.write("\n")
+
+				# Write the final models
+				for i in range(len(results)):
+					file.write("\n"+attributes[-1]+","+str(i)+",")
+					file.write(results[i][-1])
 				file.write("\n")
 
-			# Write the final models
-			for i in range(len(results)):
-				file.write("\n"+attributes[-1]+","+str(i)+",")
-				file.write(results[i][-1])
-			file.write("\n")
-
-			# Write some parameters
-			file.write("\n\nParameters")
-			file.write("\nOperators,"+str(OPERATORS))
-			file.write("\nMax Initial Depth,"+str(MAX_DEPTH))
-			file.write("\nPopulation Size,"+str(POPULATION_SIZE))
-			file.write("\nMax Generation,"+str(MAX_GENERATION))
-			file.write("\nTournament Size,"+str(TOURNAMENT_SIZE))
-			file.write("\nElitism Size,"+str(ELITISM_SIZE))
-			file.write("\nDepth Limit,"+str(LIMIT_DEPTH))
-			file.write("\nMinimum Dimensions,"+str(DIM_MIN))
-			file.write("\nMaximum Dimensions,"+str(DIM_MAX))
-			file.write("\nWrapped Model,"+MODEL_NAME)
-			file.write("\nFitness Type,"+FITNESS_TYPE)
-			file.write("\nThreads,"+str(THREADS))
-			file.write("\nRandom State,"+str(list(range(RUNS))))
-			file.write("\nDataset,"+dataset)
+				# Write some parameters
+				file.write("\n\nParameters")
+				file.write("\nOperators,"+str(OPERATORS))
+				file.write("\nMax Initial Depth,"+str(MAX_DEPTH))
+				file.write("\nPopulation Size,"+str(POPULATION_SIZE))
+				file.write("\nMax Generation,"+str(MAX_GENERATION))
+				file.write("\nTournament Size,"+str(TOURNAMENT_SIZE))
+				file.write("\nElitism Size,"+str(ELITISM_SIZE))
+				file.write("\nDepth Limit,"+str(LIMIT_DEPTH))
+				file.write("\nMinimum Dimensions,"+str(DIM_MIN))
+				file.write("\nMaximum Dimensions,"+str(DIM_MAX))
+				file.write("\nWrapped Model,"+MODEL_NAME)
+				file.write("\nFitness Type,"+FITNESS_TYPE)
+				file.write("\nThreads,"+str(THREADS))
+				file.write("\nRandom State,"+str(list(range(RUNS))))
+				file.write("\nDataset,"+dataset)
 
 
-			file.close()
+				file.close()
 		else:
 			print("Filename: " + outputFilename +" already exists.")
 
