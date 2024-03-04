@@ -21,7 +21,7 @@ warnings.filterwarnings("ignore", category=FutureWarning,
 #
 # This product can be obtained in https://github.com/jespb/Python-M3GP
 #
-# Copyright ©2019-2022 J. E. Batista
+# Copyright ©2019-2024 J. E. Batista
 #
 
 
