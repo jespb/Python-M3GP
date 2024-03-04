@@ -3,7 +3,7 @@ This is a, easy-to-use, scikit-learn inspired version of the M3GP algorithm.
 
 By using this file, you are agreeing to this product's EULA
 This product can be obtained in https://github.com/jespb/Python-M3GP
-Copyright ©2019-2022 J. E. Batista
+Copyright ©2019-2024 J. E. Batista
 
 
 This file contains information about the command and flags used in the stand-alone version of this implementation and an explanation on how to import, use and edit this implementation.
