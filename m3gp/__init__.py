@@ -1,1 +1,1 @@
-from .M6GP import M3GP
+from .M3GP import M3GP
