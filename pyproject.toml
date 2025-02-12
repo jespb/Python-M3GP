@@ -8,6 +8,9 @@ authors = [
 readme = "README.md"
 requires-python = "~=3.8"
 
+[tool.pypi-publish]
+repository = "pypi"
+
 [project.urls]
 homepage = "https://github.com/jespb/Python-M3GP"
 repository = "https://github.com/jespb/Python-M3GP"
