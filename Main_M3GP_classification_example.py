@@ -1,6 +1,7 @@
 import pandas
 
 from m3gp.M3GP import M3GP
+from sklearn.ensemble import RandomForestClassifier
 
 from sklearn.model_selection import train_test_split
 
@@ -17,7 +18,7 @@ warnings.filterwarnings("ignore", category=FutureWarning,
 #
 # This product can be obtained in https://github.com/jespb/Python-M3GP
 #
-# Copyright ©2019-2021 J. E. Batista
+# Copyright ©2019-2025 J. E. Batista
 #
 
 
@@ -33,7 +34,7 @@ Tr_X, Te_X, Tr_Y, Te_Y = train_test_split(ds.drop(columns=[class_header]), ds[cl
 		train_size=0.7, random_state = 42, stratify = ds[class_header])
 
 # Train a model
-m3gp = M3GP()
+m3gp = M3GP(model_class=RandomForestClassifier(max_depth=6), fitnessType="2FOLD")
 m3gp.fit(Tr_X, Tr_Y)
 
 # Predict test results

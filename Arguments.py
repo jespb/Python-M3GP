@@ -1,11 +1,15 @@
 from sys import argv
 
+from m3gp.MahalanobisDistanceClassifier import MahalanobisDistanceClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.tree import DecisionTreeRegressor
+
 # 
 # By using this file, you are agreeing to this product's EULA
 #
 # This product can be obtained in https://github.com/jespb/Python-M3GP
 #
-# Copyright ©2019-2022 J. E. Batista
+# Copyright ©2019-2025 J. E. Batista
 #
 
 
@@ -58,7 +62,8 @@ DIM_MAX = 9999
 RANDOM_STATE = 42
 
 # Models wrapped by the M3GP models
-MODEL_NAME = ["MahalanobisDistanceClassifier", "RandomForestClassifier", "DecisionTreeRegressor"][0]
+MODEL = [MahalanobisDistanceClassifier(), RandomForestClassifier(max_depth=6), DecisionTreeRegressor(max_depth=6)][0]
+MODEL_NAME = MODEL.__class__.__name__
 
 # Fitness used by the M3GP models
 FITNESS_TYPE = ["Accuracy", "MSE", "WAF", "2FOLD"][0]

@@ -1,9 +1,8 @@
-from sklearn.tree import DecisionTreeRegressor
 from .Node import Node
-from .MahalanobisDistanceClassifier import MahalanobisDistanceClassifier
-from sklearn.ensemble import RandomForestClassifier
 
 import pandas as pd
+
+from copy import deepcopy
 
 from sklearn.metrics import accuracy_score, f1_score, cohen_kappa_score, mean_squared_error
 
@@ -13,7 +12,7 @@ from sklearn.metrics import accuracy_score, f1_score, cohen_kappa_score, mean_sq
 #
 # This product can be obtained in https://github.com/jespb/Python-M3GP
 #
-# Copyright ©2019-2022 J. E. Batista
+# Copyright ©2019-2025 J. E. Batista
 #
 
 class Individual:
@@ -34,11 +33,11 @@ class Individual:
 
 	model = None
 
-	def __init__(self, operators, terminals, max_depth, model_name="MahalanobisDistanceClassifier", fitnessType="Accuracy"):
+	def __init__(self, operators, terminals, max_depth, model_class=None, fitnessType="Accuracy"):
 		self.operators = operators
 		self.terminals = terminals
 		self.max_depth = max_depth
-		self.model_name = model_name
+		self.model_class = model_class
 		self.fitnessType = fitnessType
 
 	def create(self,rng, n_dims=1):
@@ -74,12 +73,7 @@ class Individual:
 
 
 	def createModel(self):
-		if self.model_name == "MahalanobisDistanceClassifier":
-			return MahalanobisDistanceClassifier()
-		elif self.model_name == "RandomForestClassifier":
-			return RandomForestClassifier(random_state = 42, max_depth=6)
-		elif self.model_name == "DecisionTreeRegressor":
-			return DecisionTreeRegressor(random_state = 42, max_depth=6)
+		return deepcopy(self.model_class)
 
 	def fit(self, Tr_x, Tr_y):
 		'''
@@ -150,7 +144,7 @@ class Individual:
 			if self.fitnessType == "MSE":
 				self.fit(self.training_X, self.training_Y)
 				self.getTrainingPredictions()
-				mse = -1 * mean_squared_error(self.trainingPredictions, self.training_Y)
+				mse = float(-1 * mean_squared_error(self.trainingPredictions, self.training_Y))
 				self.fitness = mse 
 
 			if self.fitnessType == "WAF":
@@ -319,7 +313,7 @@ class Individual:
 
 		dup = self.dimensions[:]
 		i = 0
-		ind = Individual(self.operators, self.terminals, self.max_depth, self.model_name, self.fitnessType)
+		ind = Individual(self.operators, self.terminals, self.max_depth, self.model_class, self.fitnessType)
 		ind.copy(dup)
 
 		ind.fit(self.training_X, self.training_Y)
@@ -327,7 +321,7 @@ class Individual:
 		while i < len(dup) and len(dup) > min_dim:
 			dup2 = dup[:]
 			dup2.pop(i)
-			ind2 = Individual(self.operators, self.terminals, self.max_depth, self.model_name, self.fitnessType)
+			ind2 = Individual(self.operators, self.terminals, self.max_depth, self.model_class, self.fitnessType)
 			ind2.copy(dup2)
 			ind2.fit(self.training_X, self.training_Y)
 

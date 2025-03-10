@@ -6,7 +6,7 @@ from .Node import Node
 #
 # This product can be obtained in https://github.com/jespb/Python-M3GP
 #
-# Copyright ©2019-2022 J. E. Batista
+# Copyright ©2019-2025 J. E. Batista
 #
 
 
@@ -97,7 +97,7 @@ def STXO(rng, population, tournament_size):
 
 	ret = []
 	for d in [d1,d2]:
-		i = Individual(ind1.operators, ind1.terminals, ind1.max_depth, ind1.model_name, ind1.fitnessType)
+		i = Individual(ind1.operators, ind1.terminals, ind1.max_depth, ind1.model_class, ind1.fitnessType)
 		i.copy(d)
 		ret.append(i)
 	return ret
@@ -126,7 +126,7 @@ def M3XO(rng, population, tournament_size):
 
 	ret = []
 	for d in [d1,d2]:
-		i = Individual(ind1.operators, ind1.terminals, ind1.max_depth, ind1.model_name, ind1.fitnessType)
+		i = Individual(ind1.operators, ind1.terminals, ind1.max_depth, ind1.model_class, ind1.fitnessType)
 		i.copy(d)
 		ret.append(i)
 	return ret
@@ -149,7 +149,7 @@ def STMUT(rng, population, tournament_size):
 
 
 	ret = []
-	i = Individual(ind1.operators, ind1.terminals, ind1.max_depth, ind1.model_name, ind1.fitnessType)
+	i = Individual(ind1.operators, ind1.terminals, ind1.max_depth, ind1.model_class, ind1.fitnessType)
 	i.copy(d1)
 	ret.append(i)
 	return ret
@@ -171,7 +171,7 @@ def M3ADD(rng, population, tournament_size, dim_max):
 		n.create(rng, ind1.operators, ind1.terminals, ind1.max_depth)
 		d1.append(n)
 
-		i = Individual(ind1.operators, ind1.terminals, ind1.max_depth, ind1.model_name, ind1.fitnessType)
+		i = Individual(ind1.operators, ind1.terminals, ind1.max_depth, ind1.model_class, ind1.fitnessType)
 		i.copy(d1)
 		ret.append(i)
 
@@ -193,7 +193,7 @@ def M3REM(rng, population, tournament_size, dim_min):
 		r1 = rng.randint(0,len(d1)-1)
 		d1.pop(r1)
 		
-		i = Individual(ind1.operators, ind1.terminals, ind1.max_depth, ind1.model_name, ind1.fitnessType)
+		i = Individual(ind1.operators, ind1.terminals, ind1.max_depth, ind1.model_class, ind1.fitnessType)
 		i.copy(d1)
 		ret.append(i)
 	

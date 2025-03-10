@@ -21,7 +21,7 @@ warnings.filterwarnings("ignore", category=FutureWarning,
 #
 # This product can be obtained in https://github.com/jespb/Python-M3GP
 #
-# Copyright ©2019-2024 J. E. Batista
+# Copyright ©2019-2025 J. E. Batista
 #
 
 
@@ -53,7 +53,7 @@ def run(r,dataset):
 
 	# Train a model
 	m3gp = M3GP(OPERATORS, MAX_DEPTH, POPULATION_SIZE, MAX_GENERATION, TOURNAMENT_SIZE, 
-		ELITISM_SIZE, LIMIT_DEPTH, DIM_MIN, DIM_MAX, THREADS, r, VERBOSE, MODEL_NAME, FITNESS_TYPE)
+		ELITISM_SIZE, LIMIT_DEPTH, DIM_MIN, DIM_MAX, THREADS, r, VERBOSE, MODEL, FITNESS_TYPE)
 	m3gp.fit(Tr_X, Tr_Y, Te_X, Te_Y)
 
 

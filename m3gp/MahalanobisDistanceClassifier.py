@@ -5,7 +5,7 @@ import numpy as np
 #
 # This product can be obtained in https://github.com/jespb/Python-M3GP
 #
-# Copyright ©2019-2022 J. E. Batista
+# Copyright ©2019-2025 J. E. Batista
 #
 
 #
@@ -77,8 +77,6 @@ class MahalanobisDistanceClassifier:
 		'''
 		Calculates the class clusters in the output space.
 		'''
-		if self.invCovarianceMatrix != None:
-			return
 
 		X = [ list(sample) for sample in X.iloc ]
 		Y = list(Y)

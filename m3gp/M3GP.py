@@ -3,6 +3,8 @@ from .GeneticOperators import getElite, getOffspring, discardDeep
 import multiprocessing as mp
 import time
 
+from .MahalanobisDistanceClassifier import MahalanobisDistanceClassifier
+
 from random import Random
 
 # 
@@ -10,7 +12,7 @@ from random import Random
 #
 # This product can be obtained in https://github.com/jespb/Python-M3GP
 #
-# Copyright ©2019-2022 J. E. Batista
+# Copyright ©2019-2025 J. E. Batista
 #
 
 class ClassifierNotTrainedError(Exception):
@@ -38,7 +40,7 @@ class M3GP:
 	dim_min = None
 	dim_max = None
 
-	model_name = None 
+	model_class = None 
 	fitnessType = None
 
 	verbose = None
@@ -73,7 +75,7 @@ class M3GP:
 
 	def __init__(self, operators=[("+",2),("-",2),("*",2),("/",2)], max_initial_depth = 6, population_size = 500, 
 		max_generation = 100, tournament_size = 5, elitism_size = 1, max_depth = 17, 
-		dim_min = 1, dim_max = 9999, threads=1, random_state = 42, verbose = True, model_name="MahalanobisDistanceClassifier", fitnessType="Accuracy"):
+		dim_min = 1, dim_max = 9999, threads=1, random_state = 42, verbose = True, model_class=None, fitnessType="Accuracy"):
 
 		if sum( [0 if op in [("+",2),("-",2),("*",2),("/",2)] else 0 for op in operators ] ) > 0:
 			print( "[Warning] Some of the following operators may not be supported:", operators)
@@ -93,7 +95,9 @@ class M3GP:
 		self.dim_min = max(1, dim_min)
 		self.dim_max = max(1, dim_max)
 
-		self.model_name = model_name
+		self.model_class = model_class
+		if self.model_class is None:
+			self.model_class = MahalanobisDistanceClassifier()
 		self.fitnessType = fitnessType
 
 		self.verbose = verbose
@@ -191,7 +195,7 @@ class M3GP:
 			print("    > Max Depth:          "+str(self.max_depth))
 			print("    > Minimum Dimensions: "+str(self.dim_min))
 			print("    > Maximum Dimensions: "+str(self.dim_max))
-			print("    > Wrapped Model:      "+self.model_name)
+			print("    > Wrapped Model:      "+self.model_class.__class__.__name__)
 			print("    > Fitness Type:       "+self.fitnessType)
 			print("    > Threads:            "+str(self.threads))
 			print()
@@ -206,12 +210,13 @@ class M3GP:
 		self.population = []
 
 		while len(self.population) < self.population_size:
-			ind = Individual(self.operators, self.terminals, self.max_depth, self.model_name, self.fitnessType)
+			ind = Individual(self.operators, self.terminals, self.max_depth, self.model_class, self.fitnessType)
 			ind.create(self.rng, n_dims = self.dim_min)
 			self.population.append(ind)
 
 		self.bestIndividual = self.population[0]
 		self.bestIndividual.fit(self.Tr_x, self.Tr_y)
+		self.bestIndividual.getFitness()
 
 		if not self.Te_x is None:
 			self.trainingAccuracyOverTime = []
