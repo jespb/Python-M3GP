@@ -103,6 +103,8 @@ Arguments for M3GP():
     limit_depth		-> Maximum individual depth (default: 17)
     threads 		-> Number of CPU threads to be used (default: 1)
     random_state	-> Random state (default: 42)
+    model_class         -> Model to be used as the inner classifier/regressor (default: MahalanobisDistanceClassifier() )
+    fitnessType         -> Fitness to be used (Accuracy, WAF, 2FOLD - Classification, MSE - Regression) (default: "Accuracy") # "2FOLD" means 2-folds on the training data, using WAF
     dim_min		-> Minimum number of dimensions (default: 1)
     dim_max		-> Maximum number of dimensions (default: 9999) #The algorithm will not reach this value
 
@@ -113,7 +115,8 @@ Arguments for model.fit():
     Te_Y 		-> Test labels, used in the standalone version (default: None)
 
 Useful methods:
-    $ model = M3GP()	-> starts the model;
+    $ model = M3GP()	-> starts the model, the model will be optimized for the MahalanobisDistance classifier, a cluster-based algorithm;
+    $ model = M3GP(model_class = RandomForestClassifier(max_depth=6), fitnessType="2FOLD")-> the model will be optimized for the RF classifier, if you dont use 2FOLD for fitness OR limit the tree depth, the algorithm WILL overfit;
     $ model.fit(X, Y)	-> fits the model to the dataset;
     $ model.predict(X)	-> Returns a list with the prediction of the given dataset.
 
@@ -125,11 +128,6 @@ How to edit this implementation:
         - Change the getFitness() method to use your own fitness function;
         - This implementation assumes that a higher fitness is always better. To change this, edit the __gt__ method in this class;
         - Warning: Since M3GP is a slow method, a fitness function that escalates well with the number of features is recommended. 
-
-    Classification method ( m3gp.Individual ):
-        - Change the createModel() method to use your own classifier;
-        - Assuming it is a scykit-learn implementation, you may only need to change one line in this method;
-        - Warning: Since M3GP is a slow method, a learning algorithm that escalates well with the number of features is recommended.
 
    
 
