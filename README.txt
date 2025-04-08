@@ -3,7 +3,7 @@ This is a, easy-to-use, scikit-learn inspired version of the M3GP algorithm.
 
 By using this file, you are agreeing to this product's EULA
 This product can be obtained in https://github.com/jespb/Python-M3GP
-Copyright ©2019-2024 J. E. Batista
+Copyright ©2019-2025 J. E. Batista
 
 
 This file contains information about the command and flags used in the stand-alone version of this implementation and an explanation on how to import, use and edit this implementation.
@@ -14,15 +14,15 @@ This file contains information about the command and flags used in the stand-alo
 This implementation of M3GP can be used in a stand-alone fashion using the following command and flags:
 
 $ python Main_M3GP_standalone.py
-	
+    
     [-d datasets] 
         - This flag expects a set of csv dataset names separated by ";" (e.g., "a.csv;b.csv")
-        - By default, the heart.csv dataset is used		
+        - By default, the heart.csv dataset is used        
 
     [-dsdir dir] 
         - States the dataset directory. 
         - By default "datasets/" is used 
-        - Use "-dsdir ./" for the root directory	
+        - Use "-dsdir ./" for the root directory    
 
     [-es elite_size]
         - This flag expects an integer with the elite size;
@@ -30,7 +30,7 @@ $ python Main_M3GP_standalone.py
 
     [-md max_depth]
         - This flag expects an integer with the maximum initial depth for the trees;
-        - By default, this value is set to 6.		
+        - By default, this value is set to 6.        
 
     [-mg max_generation]
         - This flag expects an integer with the maximum number of generations;
@@ -40,11 +40,11 @@ $ python Main_M3GP_standalone.py
         - States the output directory. 
         - By default "results/" is used 
         - Use "-odir ./" for the root directory
-	
+    
     [-op operators]
         - This flag excepts a set of operators and their number of arguments, separated by ";"
         - Allowed operators: +,2 ; -,2 ; *,2 ; /,2
-        - By default, the used operators are the sum, subtraction, multiplication and protected division: "+,2;-,2;*,2;/,2"	
+        - By default, the used operators are the sum, subtraction, multiplication and protected division: "+,2;-,2;*,2;/,2"    
 
     [-ps population_size]
         - This flag expects an integer with the size of the population;
@@ -53,11 +53,11 @@ $ python Main_M3GP_standalone.py
     [-runs number_of_runs] 
         - This flag expects an integer with the number of runs to be made;
         - By default, this values is set to 30
-	
+    
     [-tf train_fraction]
         - This flag expects a float [0;1] with the fraction of the dataset to be used in training;
         - By default, this value is set to 0.70
-	
+    
     [-ts tournament_size]
         - This flag expects an integer with the tournament size;
         - By default, this value is set to 10.
@@ -66,7 +66,7 @@ $ python Main_M3GP_standalone.py
         - This flag expects an integer with the number of threads to use while evaluating the population;
         - If the value is set to 1, the multiprocessing library will not be used 
         - By default, this value is set to 1.
-	
+    
     [-di minimum_number_of_dimension]
         - This flag expects an integer with the minimum number of dimensions in each individual;
         - This flag affects the number of dimensions in the initial individuals;
@@ -81,44 +81,52 @@ $ python Main_M3GP_standalone.py
         - By default, this value is set to 42
 
 
-	
+    
 
 How to import this implementation to your project:
     - Download this repository;
     - Copy the "m3gp/" directory to your project directory;
     - import the M3GP class using "from m3gp.M3GP import M3GP".
 
+Alternativaly, m3gp can be installed using:
+    - pip install m3gp
+
+
 How to use this implementation:
     $ from m3gp.M3GP import M3GP
     $ model = M3GP()
     $ model.fit( training_x, training_y, test_x (optional), test_y (optional) )
 
+
 Arguments for M3GP():
-    operators		-> Operators used by the individual (default: [("+",2),("-",2),("*",2),("/",2)] )
-    max_depth		-> Max initial depths of the individuals (default: 6)
-    population_size	-> Population size (default: 500)
-    max_generation	-> Maximum number of generations (default: 100)
-    tournament_size	-> Tournament size (default: 5)
-    elitism_size	-> Elitism selection size (default: 1)
-    limit_depth		-> Maximum individual depth (default: 17)
-    threads 		-> Number of CPU threads to be used (default: 1)
-    random_state	-> Random state (default: 42)
-    model_class         -> Model to be used as the inner classifier/regressor (default: MahalanobisDistanceClassifier() )
-    fitnessType         -> Fitness to be used (Accuracy, WAF, 2FOLD - Classification, MSE - Regression) (default: "Accuracy") # "2FOLD" means 2-folds on the training data, using WAF
-    dim_min		-> Minimum number of dimensions (default: 1)
-    dim_max		-> Maximum number of dimensions (default: 9999) #The algorithm will not reach this value
+    operators        -> Operators used by the individual (default: [("+",2),("-",2),("*",2),("/",2)] )
+    max_depth        -> Max initial depths of the individuals (default: 6)
+    population_size  -> Population size (default: 500)
+    max_generation   -> Maximum number of generations (default: 100)
+    tournament_size  -> Tournament size (default: 5)
+    elitism_size     -> Elitism selection size (default: 1)
+    limit_depth      -> Maximum individual depth (default: 17)
+    threads          -> Number of CPU threads to be used (default: 1)
+    random_state     -> Random state (default: 42)
+    model_class      -> Model to be used as the inner classifier/regressor (default: MahalanobisDistanceClassifier() )
+    fitnessType      -> Fitness to be used (Accuracy, WAF, 2FOLD - Classification, MSE - Regression) (default: "Accuracy") # "2FOLD" means 2-folds on the training data, using WAF
+    dim_min          -> Minimum number of dimensions (default: 1)
+    dim_max          -> Maximum number of dimensions (default: 9999) #The algorithm will not reach this value
 
 Arguments for model.fit():
-    Tr_X 		-> Training samples
-    Tr_Y 		-> Training labels
-    Te_X 		-> Test samples, used in the standalone version (default: None)
-    Te_Y 		-> Test labels, used in the standalone version (default: None)
+    Tr_X         -> Training samples
+    Tr_Y         -> Training labels
+    Te_X         -> Test samples, used in the standalone version (default: None)
+    Te_Y         -> Test labels, used in the standalone version (default: None)
 
 Useful methods:
-    $ model = M3GP()	-> starts the model, the model will be optimized for the MahalanobisDistance classifier, a cluster-based algorithm;
-    $ model = M3GP(model_class = RandomForestClassifier(max_depth=6), fitnessType="2FOLD")-> the model will be optimized for the RF classifier, if you dont use 2FOLD for fitness OR limit the tree depth, the algorithm WILL overfit;
-    $ model.fit(X, Y)	-> fits the model to the dataset;
-    $ model.predict(X)	-> Returns a list with the prediction of the given dataset.
+    $ model = M3GP()    -> starts the model, the model will be optimized for the MahalanobisDistance classifier, a cluster-based algorithm;
+    $ model = M3GP(model_class = RandomForestClassifier(max_depth=6), fitnessType="2FOLD")
+        -> the model will be optimized for the RF classifier
+        -> Since RF models with no depth limit will memorize the training data, the models will obtain perfect accuracy in early generations,
+        -> to predent this, either limit the RF trees depth (e.g., max_depth=6), or use "2FOLD" as fitnessType;
+    $ model.fit(X, Y)    -> fits the model to the dataset;
+    $ model.predict(X)    -> Returns a list with the prediction of the given dataset.
 
 
 
@@ -136,14 +144,14 @@ Citation:
     If you use this implementation, please cite one of the works below, where the implementation is also used:
 
     @inproceedings{Batista2022,
-  	doi = {10.1109/cec55065.2022.9870343},
-  	url = {https://doi.org/10.1109/cec55065.2022.9870343},
-  	year = {2022},
-  	month = jul,
-  	publisher = {{IEEE}},
-  	author = {Joao E. Batista and Sara Silva},
-  	title = {Comparative study of classifier performance using automatic feature construction by M3GP},
-  	booktitle = {2022 {IEEE} Congress on Evolutionary Computation ({CEC})}
+      doi = {10.1109/cec55065.2022.9870343},
+      url = {https://doi.org/10.1109/cec55065.2022.9870343},
+      year = {2022},
+      month = jul,
+      publisher = {{IEEE}},
+      author = {Joao E. Batista and Sara Silva},
+      title = {Comparative study of classifier performance using automatic feature construction by M3GP},
+      booktitle = {2022 {IEEE} Congress on Evolutionary Computation ({CEC})}
     }
 
     @Article{rs13091623,
