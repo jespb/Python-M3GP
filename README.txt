@@ -1,5 +1,6 @@
 This is a, easy-to-use, scikit-learn inspired version of the M3GP algorithm.
 
+Also available through: `pip install m3gp`
 
 By using this file, you are agreeing to this product's EULA
 This product can be obtained in https://github.com/jespb/Python-M3GP
@@ -143,38 +144,42 @@ How to edit this implementation:
 Citation: 
     If you use this implementation, please cite one of the works below, where the implementation is also used:
 
+    @INPROCEEDINGS{Batista2024,
+    author={Batista, João Eduardo and Pindur, Adam Kotaro and Iba, Hitoshi and Silva, Sara},
+    booktitle={2024 IEEE Congress on Evolutionary Computation (CEC)}, 
+    title={Measuring Structural Complexity of GP Models for Feature Engineering over the Generations}, 
+    year={2024},
+    volume={},
+    number={},
+    pages={1-8},
+    doi={10.1109/CEC60901.2024.10611989}
+    }
+
+    
     @inproceedings{Batista2022,
-      doi = {10.1109/cec55065.2022.9870343},
-      url = {https://doi.org/10.1109/cec55065.2022.9870343},
-      year = {2022},
-      month = jul,
-      publisher = {{IEEE}},
-      author = {Joao E. Batista and Sara Silva},
-      title = {Comparative study of classifier performance using automatic feature construction by M3GP},
-      booktitle = {2022 {IEEE} Congress on Evolutionary Computation ({CEC})}
+    doi = {10.1109/cec55065.2022.9870343},
+    url = {https://doi.org/10.1109/cec55065.2022.9870343},
+    year = {2022},
+    month = jul,
+    publisher = {{IEEE}},
+    author = {Joao E. Batista and Sara Silva},
+    title = {Comparative study of classifier performance using automatic feature construction by M3GP},
+    booktitle = {2022 {IEEE} Congress on Evolutionary Computation ({CEC})}
     }
 
     @Article{rs13091623,
-        AUTHOR = {Batista, João E. and Cabral, Ana I. R. and Vasconcelos, Maria J. P. and Vanneschi, Leonardo and Silva, Sara},
-        TITLE = {Improving Land Cover Classification Using Genetic Programming for Feature Construction},
-        JOURNAL = {Remote Sensing},
-        VOLUME = {13},
-        YEAR = {2021},
-        NUMBER = {9},
-        ARTICLE-NUMBER = {1623},
-        URL = {https://www.mdpi.com/2072-4292/13/9/1623},
-        ISSN = {2072-4292},
-        DOI = {10.3390/rs13091623}
+    AUTHOR = {Batista, João E. and Cabral, Ana I. R. and Vasconcelos, Maria J. P. and Vanneschi, Leonardo and Silva, Sara},
+    TITLE = {Improving Land Cover Classification Using Genetic Programming for Feature Construction},
+    JOURNAL = {Remote Sensing},
+    VOLUME = {13},
+    YEAR = {2021},
+    NUMBER = {9},
+    ARTICLE-NUMBER = {1623},
+    URL = {https://www.mdpi.com/2072-4292/13/9/1623},
+    ISSN = {2072-4292},
+    DOI = {10.3390/rs13091623}
     }
 
-    @INPROCEEDINGS{9185630,
-        author={Batista, João E. and Silva, Sara},
-        booktitle={2020 IEEE Congress on Evolutionary Computation (CEC)}, 
-        title={Improving the Detection of Burnt Areas in Remote Sensing using Hyper-features Evolved by M3GP}, 
-        year={2020},
-        pages={1-8},
-        doi={10.1109/CEC48606.2020.9185630}
-    }
 
 
 
