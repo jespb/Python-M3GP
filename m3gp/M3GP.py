@@ -40,7 +40,7 @@ class M3GP:
 	dim_min = None
 	dim_max = None
 
-	model_class = None 
+	model_class = None
 	fitnessType = None
 
 	verbose = None
@@ -64,6 +64,7 @@ class M3GP:
 	sizeOverTime = None
 	dimensionsOverTime = None
 	generationTimes = None
+
 
 
 
@@ -300,13 +301,18 @@ class M3GP:
 
 		# Calculates the accuracy of the population using multiprocessing
 		if self.threads > 1:
-			with mp.Pool(processes= self.threads) as pool:
-				results = pool.map(fitIndividuals, [(ind, self.Tr_x, self.Tr_y) for ind in self.population] )
+			# Pre-convert all datasets in main process and cache in individuals
+			for ind in self.population:
+				ind.cachedConvertedTrainingX = ind.convert(self.Tr_x)
+				ind.training_X = self.Tr_x
+				ind.training_Y = self.Tr_y
+
+			# Send individuals with cached converted datasets
+			with mp.Pool(processes=self.threads) as pool:
+				results = pool.map(fitIndividualWithCache, self.population)
 				for i in range(len(self.population)):
 					self.population[i].trainingPredictions = results[i][0]
 					self.population[i].fitness = results[i][1]
-					self.population[i].training_X = self.Tr_x
-					self.population[i].training_Y = self.Tr_y
 		else:
 			[ ind.fit(self.Tr_x, self.Tr_y) for ind in self.population]
 			[ ind.getFitness() for ind in self.population ]
@@ -356,9 +362,17 @@ class M3GP:
 		return "Population Not Trained" if self.bestIndividual == None else self.bestIndividual.predict(sample)
 
 
-def fitIndividuals(a):
-	ind,x,y = a
-	ind.getFitness(x,y)
+def fitIndividualWithCache(ind):
+	"""Fit individual using its cached converted dataset"""
+	# Individual already has:
+	# - cachedConvertedTrainingX (pre-converted dataset)
+	# - training_X (original dataset)
+	# - training_Y (labels)
+
+	hyper_X = ind.cachedConvertedTrainingX
+
+	# Fit using cached converted dataset
+	ind.getFitness(ind.training_X, ind.training_Y, hyper_X)
 
 	ret = []
 	if "FOLD" in ind.fitnessType:
@@ -367,7 +381,6 @@ def fitIndividuals(a):
 		ret.append(ind.getTrainingPredictions())
 	ret.append(ind.getFitness())
 
-	
 	return ret 
 
 

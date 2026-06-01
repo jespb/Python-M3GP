@@ -32,6 +32,7 @@ class Individual:
 	fitness = None
 
 	model = None
+	cachedConvertedTrainingX = None
 
 	def __init__(self, operators, terminals, max_depth, model_class=None, fitnessType="Accuracy"):
 		self.operators = operators
@@ -75,7 +76,7 @@ class Individual:
 	def createModel(self):
 		return deepcopy(self.model_class)
 
-	def fit(self, Tr_x, Tr_y):
+	def fit(self, Tr_x, Tr_y, hyper_X=None):
 		'''
 		Trains the classifier which will be used in the fitness function
 		'''
@@ -84,8 +85,16 @@ class Individual:
 			self.training_Y = Tr_y
 
 			self.model = self.createModel()
-	
-			hyper_X = self.convert(Tr_x)
+
+			if hyper_X is None:
+				# Check if we have a cached version first
+				if self.cachedConvertedTrainingX is not None:
+					hyper_X = self.cachedConvertedTrainingX
+				else:
+					hyper_X = self.convert(Tr_x)
+					self.cachedConvertedTrainingX = hyper_X
+			else:
+				self.cachedConvertedTrainingX = hyper_X
 
 			self.model.fit(hyper_X,Tr_y)
 
@@ -124,54 +133,61 @@ class Individual:
 
 
 
-	def getFitness(self, tr_x = None, tr_y = None):
+	def getFitness(self, tr_x = None, tr_y = None, hyper_X=None):
 		'''
 		Returns the individual's fitness.
 		'''
-		if self.fitness is None:
-			if not tr_x is None:
-				self.training_X = tr_x
-			if not tr_y is None:
-				self.training_Y = tr_y
+		# Early return if already computed
+		if self.fitness is not None:
+			return self.fitness
 
+		# Set training data if provided
+		if not tr_x is None:
+			self.training_X = tr_x
+		if not tr_y is None:
+			self.training_Y = tr_y
 
-			if self.fitnessType == "Accuracy":
-				self.fit(self.training_X, self.training_Y)
-				self.getTrainingPredictions()
-				acc = accuracy_score(self.trainingPredictions, self.training_Y)
-				self.fitness = acc 
+		# Calculate fitness based on fitness type - avoid redundant operations
+		if self.fitnessType == "Accuracy":
+			self.fit(self.training_X, self.training_Y, hyper_X)
+			self.getTrainingPredictions()
+			acc = accuracy_score(self.trainingPredictions, self.training_Y)
+			self.fitness = acc
 
-			if self.fitnessType == "MSE":
-				self.fit(self.training_X, self.training_Y)
-				self.getTrainingPredictions()
-				mse = float(-1 * mean_squared_error(self.trainingPredictions, self.training_Y))
-				self.fitness = mse 
+		elif self.fitnessType == "MSE":
+			self.fit(self.training_X, self.training_Y, hyper_X)
+			self.getTrainingPredictions()
+			mse = float(-1 * mean_squared_error(self.trainingPredictions, self.training_Y))
+			self.fitness = mse
 
-			if self.fitnessType == "WAF":
-				self.fit(self.training_X, self.training_Y)
-				self.getTrainingPredictions()
-				waf = f1_score(self.trainingPredictions, self.training_Y, average="weighted")
-				self.fitness = waf 
+		elif self.fitnessType == "WAF":
+			self.fit(self.training_X, self.training_Y, hyper_X)
+			self.getTrainingPredictions()
+			waf = f1_score(self.trainingPredictions, self.training_Y, average="weighted")
+			self.fitness = waf
 
-			if self.fitnessType == "2FOLD":
+		elif self.fitnessType == "2FOLD":
+			if hyper_X is None:
 				hyper_X = self.convert(self.training_X)
+			else:
+				self.cachedConvertedTrainingX = hyper_X
 
-				X1 = hyper_X.iloc[:len(hyper_X)//2]
-				Y1 = self.training_Y[:len(self.training_Y)//2]
-				X2 = hyper_X.iloc[len(hyper_X)//2:]
-				Y2 = self.training_Y[len(self.training_Y)//2:]
+			X1 = hyper_X.iloc[:len(hyper_X)//2]
+			Y1 = self.training_Y[:len(self.training_Y)//2]
+			X2 = hyper_X.iloc[len(hyper_X)//2:]
+			Y2 = self.training_Y[len(self.training_Y)//2:]
 
-				M1 = self.createModel()
-				M1.fit(X1,Y1)
-				P1 = M1.predict(X2)
+			M1 = self.createModel()
+			M1.fit(X1,Y1)
+			P1 = M1.predict(X2)
 
-				M2 = self.createModel()
-				M2.fit(X2,Y2)
-				P2 = M2.predict(X1)
+			M2 = self.createModel()
+			M2.fit(X2,Y2)
+			P2 = M2.predict(X1)
 
-				f1 = accuracy_score(P1, Y2)
-				f2 = accuracy_score(P2, Y1)
-				self.fitness = (f1+f2)/2
+			f1 = accuracy_score(P1, Y2)
+			f2 = accuracy_score(P2, Y1)
+			self.fitness = (f1+f2)/2
 
 		return self.fitness
 
@@ -207,7 +223,10 @@ class Individual:
 
 	def getTrainingPredictions(self):
 		if self.trainingPredictions is None:
-			self.trainingPredictions = self.predict(self.training_X)
+			if self.cachedConvertedTrainingX is not None:
+				self.trainingPredictions = self.model.predict(self.cachedConvertedTrainingX)
+			else:
+				self.trainingPredictions = self.predict(self.training_X)
 
 		return self.trainingPredictions
 
