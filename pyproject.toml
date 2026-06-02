@@ -1,6 +1,6 @@
 [project]
 name = "M3GP"
-version = "1.2.0"
+version = "1.2.1"
 description = "Python implementation of M3GP"
 authors = [
     { name = "João Batista", email = "joao.batista@riken.jp" }
